@@ -1,11 +1,15 @@
 <?php
 
-use App\Http\Controllers\Pages\LandingPage;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', LandingPage::class)->name('index');
 
-require_once __DIR__ . '/auth.php';
+foreach (config('tenancy.central_domains') as $domain) {
+    Route::domain($domain)->group(function () {
+        // your actual routes
+        Route::get('/', HomeController::class)->name('index');
+    });
+}
 
 
 

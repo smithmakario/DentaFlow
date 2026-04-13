@@ -24,6 +24,7 @@ Route::middleware([
     Route::get('/', function () {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
+
     require_once __DIR__ . '/auth.php';
         
     require_once __DIR__ . '/clinician.php';
