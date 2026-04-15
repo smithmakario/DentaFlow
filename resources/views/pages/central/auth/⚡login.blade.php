@@ -2,19 +2,33 @@
 
 
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 
 new class extends Component {
+    #[Validate('required')]
     public $username;
 
+    #[Validate('required')]
     public $password;
 
     public $user_type = 'patient';
 
     public $remember = true;
 
+    #[Validate('required')]
+    public $tenant_id;
+
+    #[Computed]
+    public function tenants()
+    {
+        return \App\Models\Tenant::all()->map(fn ($tenant) => $tenant->id);
+    }
+
     public function save()
     {
+        $this->validate();
         $credentials = $this->only('username', 'password');
         if (filter_var($this->username, FILTER_VALIDATE_EMAIL)) {
             $credentials = [
@@ -48,6 +62,9 @@ new class extends Component {
                         <label for="clinician" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
                             <x-radio label="Clinician" id="clinician" value="clinician" name="user_type" wire:model="user_type" color="green"/>
                         </label>
+                    </div>
+                    <div class="mb-6">
+                        <x-select.styled label="Choose branch *" placeholder="Enter branch" :options="$this->tenants" />
                     </div>
                     <div class="mb-6">
                         <x-input label="Username or email *" placeholder="Enter username or email" wire:model="username" />

@@ -12,5 +12,5 @@ new
 ?>
 
 <div>
-    {{-- Simplicity is the consequence of refined emotions. - Jean D'Alembert --}}
+    {{-- Order your soul. Reduce your wants. - Augustine --}}
 </div>

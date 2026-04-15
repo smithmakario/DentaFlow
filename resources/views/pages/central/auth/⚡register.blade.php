@@ -1,27 +1,20 @@
 <?php
 
 
-use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use App\Livewire\Forms\UserForm;
+use Livewire\Component;
+use Livewire\Attributes\Computed;
 
 new class extends Component
 {
     public UserForm $form;
 
-    public function save()
+    #[Computed]
+    public function tenants()
     {
-        $this->validate();
-        $user = $this->form->save();
-
-        Auth::login($user);
-
-        return redirect()->intended(match($user->user_type) {
-            'patient' => route('patient.dashboard'),
-            'clinician' => route('clinician.dashboard'),
-            default => ''
-        });
+        return \App\Models\Tenant::all()->map(fn ($tenant) => $tenant->id);
     }
+
 };
 ?>
 
@@ -38,6 +31,9 @@ new class extends Component
                         <label for="clinician" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
                             <x-radio label="Clinician" id="clinician" value="clinician" name="user_type" wire:model="form.user_type" color="green"/>
                         </label>
+                    </div>
+                    <div class="mb-6">
+                        <x-select.styled label="Choose branch *" placeholder="Enter branch" :options="$this->tenants" />
                     </div>
                     <div class="flex mb-6 gap-3">
                         <div class="basis-1/2">
