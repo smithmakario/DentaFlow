@@ -2,7 +2,9 @@
 
 
 
+
 use App\Models\Tenant;
+use App\Services\TokenGeneratorService;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -28,7 +30,7 @@ new class extends Component {
         return \App\Models\Tenant::all()->map(fn ($tenant) => $tenant->id);
     }
 
-    public function save()
+    public function save(TokenGeneratorService $tokenGenerator)
     {
         $this->validate();
         $credentials = $this->only('username', 'password');
@@ -51,15 +53,11 @@ new class extends Component {
         if (!$loggedin) {
             throw ValidationException::withMessages(['username' => 'Credentials not found']);
         }
-        $payload = [
-            "user_id" => $user->id,
-            "user_type" => $user->user_type,
-            "exp" => time() + 60,
-        ];
-        $data = base64_encode(json_encode($payload));
-        $signature = hash_hmac('sha256', $data, config('app.key'));
-        $token = $data . '.' . $signature;
 
+        $token = $tokenGenerator->signed([
+            'user_id' => $user->id, 
+            'user_type' => $this->user_type
+        ]);
         $domain = $tenant->domains()->first();
         $url = request()->getScheme() . "://{$domain->domain}";
         if (app()->environment('local')) {

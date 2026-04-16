@@ -9,12 +9,12 @@ foreach (config('tenancy.central_domains') as $domain) {
         // your actual routes
         Route::get('', HomeController::class)->name('index');
 
-        Route::livewire('login', 'pages::central.auth.login')->name('login');
-        Route::livewire('register', 'pages::central.auth.register')->name('register');
+        Route::livewire('login', 'pages::central.auth.login')->name('central.login');
+        Route::livewire('register', 'pages::central.auth.register')->name('central.register');
 
         Route::livewire('admin/login', 'pages::central.auth.admin')->name('admin.login');
         
-        Route::post('logout', LogoutController::class)->name('logout');
+        Route::post('logout', LogoutController::class)->name('central.logout');
 
         Route::livewire('admin', 'pages::central.admin.dashboard')->middleware('auth')->name('admin.dashboard');
         Route::livewire('admin/branches', 'pages::central.admin.branches')->middleware('auth')->name('admin.branches');

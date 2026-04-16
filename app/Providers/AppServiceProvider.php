@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\TokenGeneratorService;
 use Illuminate\Support\ServiceProvider;
 use TallStackUi\Facades\TallStackUi;
 
@@ -12,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(TokenGeneratorService::class);
     }
 
     /**

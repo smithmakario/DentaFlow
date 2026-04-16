@@ -14,10 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
-            $table->foreignId('treatment_id')->constrained()->onDelete('cascade');
+            $table->foreignId('treatment_id')->nullable()->constrained()->onDelete('cascade');
             $table->dateTime('scheduled_at');
             $table->text('notes')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->default('pending');
             $table->foreign('patient_id')->on('users')->references('id')->onDelete('cascade');
             $table->foreign('doctor_id')->on('users')->references('id')->onDelete('cascade');
             $table->timestamps();

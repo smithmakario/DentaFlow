@@ -1,36 +1,31 @@
 <?php
-
-
 use App\Models\Appointment;
 use App\Models\User;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use TallStackUi\Traits\Interactions;
 
 new
-    #[Layout('layouts::patient')]
+    #[Layout('layouts::clinician')]
     class extends Component
     {
-        use Interactions;
+    use Interactions;
 
-        #[Validate('required')]
-        public $clinician;
+    public $clinician;
 
-        #[Validate('required')]
-        public $schedule;
+    public $schedule;
 
-        public $notes;
+    public $notes = '';
 
         public function with(): array
         {
             return [
                 'headers' => [
-                    ['index' => 'doctor_id', 'label' => 'Doctor name'],
-                    ['index' => 'scheduled_at', 'label' => 'Scheduled at'],
-                    ['index' => 'notes', 'label' => 'Notes'],
-                    ['index' => 'status', 'label' => 'Status'],
+                    ['id' => 'doctor_name', 'label' => 'Doctor name'],
+                    ['id' => 'treatment_id', 'label' => 'Treatment'],
+                    ['id' => 'scheduled_at', 'label' => 'Scheduled at'],
+                    ['id' => 'status', 'label' => 'Status'],
                 ],
                 'rows' => Appointment::all()
             ];
@@ -44,18 +39,18 @@ new
                     'value' => $user->id,
                     'label' => $user->username,
                 ];
-            })->toArray();
+            });
         }
 
         public function save()
         {
-            $this->validate();
+
             Appointment::create([
-                'doctor_id' => $this->clinician,
-                'patient_id' => auth()->user()->id,
-                'scheduled_at' => $this->schedule,
-                'notes' => $this->notes,
-            ]);
+            'doctor_id' => $this->clinician,
+            'patient_id' => auth()->user()->id,
+            'scheduled_at' => $this->schedule,
+            'notes' => $this->notes,
+        ]);
             $this->toast()->success('Appointment saved')->send();
         }
     };
@@ -63,7 +58,7 @@ new
 
 <div>
     <x-modal title="Book Appointment" id="app-modal">
-        <form action="" wire:submit="save">
+        <form action="" wire:modal="save">
             <div class="mb-6">
                 <x-select.styled label="Clinician *" :options="$this->clinicians" wire:model="clinician" />
             </div>
@@ -71,7 +66,7 @@ new
                <x-date label="Schedule *" placeholder="Select schedule date" wire:model="schedule" />
             </div>
             <div class="mb-6">
-                <x-textarea label="Notes" placeholder="Add notes"  wire:model="notes" />
+                <x-textarea label="Notes" placeholder="Add notes" wire:model="notes" />
             </div>
             <x-button type="submit" text="Book now!" />
         </form>

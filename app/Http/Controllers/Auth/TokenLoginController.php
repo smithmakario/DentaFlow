@@ -4,28 +4,23 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\TokenGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TokenLoginController extends Controller
 {
-    public function __invoke(Request $request, $token)
+    public function __invoke(Request $request, TokenGeneratorService $tokenGenerator, $token)
     {
-        list($data, $signature) = explode('.', $token);
-        $expected = hash_hmac('sha256', $data, config('app.key'));
+        $payload = $tokenGenerator->verifySigned($token);
 
-        if (!hash_equals($expected, $signature)) {
-            return back()->withErrors(['username' => 'The token is invalid']);
+        if ($payload) {
+            $user = User::find($payload['user_id']);
+            Auth::login($user);
+            return redirect("/{$payload['user_type']}");
         }
 
-        $payload = json_decode(base64_decode($data), true);
-        
-        if ($payload['exp'] < time()) {
-            return back()->withErrors(['username' => 'Token has expired']);
-        }
+        return back()->withErrors(['username' => 'Invalid credentials']);
 
-        $user = User::find($payload['user_id']);
-        Auth::login($user);
-        return redirect("/{$user->user_type}");
     }
 }

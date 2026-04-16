@@ -18,12 +18,15 @@
         </style>
     </head>
     <body>
+        <x-toast />
         <x-layout>
             <x-slot:header>
                 <x-layout.header>
                     <x-slot:right>
-                        <x-dropdown text="Hello, Patient!">
-                            <x-dropdown.items text="Profile" icon="user" />
+                        <x-dropdown text="Hello, {{ auth()->user()->username }}!">
+                            <a href="{{ route('patient.profile')}}">
+                                <x-dropdown.items text="Profile" icon="user-circle" />
+                            </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown.items text="Logout" icon="arrow-left-on-rectangle" onclick="event.preventDefault(); this.closest('form').submit();" />

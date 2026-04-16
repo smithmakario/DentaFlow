@@ -25,7 +25,7 @@
                     <x-slot:right>
                         <x-dropdown text="Hello, Admin!">
                             <x-dropdown.items text="Profile" icon="user" />
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form method="POST" action="{{ route('central.logout') }}">
                                 @csrf
                                 <x-dropdown.items text="Logout" icon="arrow-left-on-rectangle" onclick="event.preventDefault(); this.closest('form').submit();" />
                             </form>
