@@ -1,6 +1,8 @@
 <?php
 
 
+
+use App\Models\Tenant;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -18,7 +20,7 @@ new class extends Component {
     public $remember = true;
 
     #[Validate('required')]
-    public $tenant_id;
+    public $tenant;
 
     #[Computed]
     public function tenants()
@@ -36,14 +38,34 @@ new class extends Component {
                 'password' => $this->password,
             ];
         }
-        if (auth()->attempt($credentials, $this->remember)) {
-            if (auth()->user()->user_type === 'clinician') {
-                return redirect('/clinician');
-            } else {
-                return redirect('/patient');
+        $remember = $this->remember;
+        $tenant = Tenant::find($this->tenant);
+        $loggedin = false;
+        $user = null;
+        $tenant->run(function () use(&$user, &$loggedin, $credentials, $remember) {
+            if (auth()->attempt($credentials, $remember)) {
+                $loggedin = true;
+                $user = auth()->user();
             }
+        });
+        if (!$loggedin) {
+            throw ValidationException::withMessages(['username' => 'Credentials not found']);
         }
-        throw ValidationException::withMessages(['username' => 'Credentials not found']);
+        $payload = [
+            "user_id" => $user->id,
+            "user_type" => $user->user_type,
+            "exp" => time() + 60,
+        ];
+        $data = base64_encode(json_encode($payload));
+        $signature = hash_hmac('sha256', $data, config('app.key'));
+        $token = $data . '.' . $signature;
+
+        $domain = $tenant->domains()->first();
+        $url = request()->getScheme() . "://{$domain->domain}";
+        if (app()->environment('local')) {
+            $url .= ':' . request()->getPort();
+        }
+        return redirect($url . "/{$token}/login");
     }
 };
 ?>
@@ -64,7 +86,7 @@ new class extends Component {
                         </label>
                     </div>
                     <div class="mb-6">
-                        <x-select.styled label="Choose branch *" placeholder="Enter branch" :options="$this->tenants" />
+                        <x-select.styled label="Choose branch *" placeholder="Enter branch" :options="$this->tenants" wire:model="tenant" />
                     </div>
                     <div class="mb-6">
                         <x-input label="Username or email *" placeholder="Enter username or email" wire:model="username" />

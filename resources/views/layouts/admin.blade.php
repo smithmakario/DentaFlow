@@ -18,11 +18,12 @@
         </style>
     </head>
     <body>
+        <x-toast />
         <x-layout>
             <x-slot:header>
                 <x-layout.header>
                     <x-slot:right>
-                        <x-dropdown text="Hello, Clinician!">
+                        <x-dropdown text="Hello, Admin!">
                             <x-dropdown.items text="Profile" icon="user" />
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -36,15 +37,16 @@
             <x-slot:menu>
                 <x-side-bar>
                     <x-slot:brand>
-                        <div class="border-b-1 p-3 border-primary-500">
-                            <h2 class="text-xl text-center text-primary-500">Clinician</h2>
+                        <div class="mt-3">
+                            <h2 class="text-xl text-center text-secondary-500 font-bold">Admin</h2>
                         </div>
                     </x-slot:brand>
-                    <x-side-bar.item text="Home" icon="home" :route="route('clinician.dashboard')" />
+                    <x-side-bar.item text="Home" icon="home" :route="route('admin.dashboard')" />
+                    <x-side-bar.item text="Branches" icon="clock" :route="route('admin.branches')" />
                 </x-side-bar>
             </x-slot:menu>
 
-            {{ $slot }}
+             {{ $slot }}
         </x-layout>
 
         @livewireScripts

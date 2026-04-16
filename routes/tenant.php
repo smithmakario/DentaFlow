@@ -26,7 +26,7 @@ Route::middleware([
     });
 
     require_once __DIR__ . '/auth.php';
-        
+
     require_once __DIR__ . '/clinician.php';
 
     require_once __DIR__ . '/patient.php';

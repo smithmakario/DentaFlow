@@ -1,20 +1,46 @@
 <?php
 
 
-use App\Livewire\Forms\UserForm;
-use Livewire\Component;
-use Livewire\Attributes\Computed;
 
-new class extends Component
-{
+
+
+use App\Livewire\Forms\UserForm;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
+
+new class extends Component {
     public UserForm $form;
+
+    #[Validate('required')]
+    public $tenant;
+
+    public function save()
+    {
+        $this->validate();
+        $tenant = Tenant::find($this->tenant);
+        $user_type = null;
+        $tenant->run(function () use(&$user_type) {
+            $user = $this->form->save();
+            $user_type = $user->user_type;
+            Auth::login($user);
+        });
+        $domain = $tenant->domains()->first();
+        $url = request()->getScheme() . "://{$domain->domain}";
+        if (app()->environment('local')) {
+            $url .= ':' . request()->getPort();
+        }
+        return redirect($url . "/{$user_type}");
+    }
 
     #[Computed]
     public function tenants()
     {
-        return \App\Models\Tenant::all()->map(fn ($tenant) => $tenant->id);
+        return \App\Models\Tenant::all()->map(fn($tenant) => $tenant->id);
     }
-
 };
 ?>
 
@@ -33,7 +59,7 @@ new class extends Component
                         </label>
                     </div>
                     <div class="mb-6">
-                        <x-select.styled label="Choose branch *" placeholder="Enter branch" :options="$this->tenants" />
+                        <x-select.styled label="Choose branch *" placeholder="Enter branch" :options="$this->tenants" wire:model="tenant" />
                     </div>
                     <div class="flex mb-6 gap-3">
                         <div class="basis-1/2">
@@ -62,7 +88,7 @@ new class extends Component
                             <x-password label="Confirm Password *"  placeholder="Enter password"  wire:model="form.confirm_password"/>
                         </div>
                     </div>
-                    <x-button submit text="Sign Up" class="w-full"/> 
+                    <x-button submit text="Sign Up" class="w-full"/>
                 </form>
                 <p class="mt-6 text-center">Already have an account? <x-link href="{{ route('login') }}" text="Sign in" /></p>
             </x-card>

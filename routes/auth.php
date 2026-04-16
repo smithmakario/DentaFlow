@@ -1,10 +1,13 @@
 <?php
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\TokenLoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::livewire('register', 'pages::auth.register')->name('register');
 
 Route::livewire('login', 'pages::auth.login')->name('login');
+
+Route::get('/{token}/login', TokenLoginController::class)->name('token.login');
 
 Route::livewire('forgot-password', 'pages::auth.forgot-password')->name('forgot-password');
 

@@ -10,6 +10,12 @@
         <tallstackui:script />
         @livewireStyles
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+            main.mx-auto.max-w-full.p-10 {
+                background: #f9fafb;
+                min-height: 100vh;
+            }
+        </style>
     </head>
     <body>
         <x-layout>
@@ -40,7 +46,7 @@
                 </x-side-bar>
             </x-slot:menu>
 
-            {{ $slot }}
+             {{ $slot }}
         </x-layout>
 
         @livewireScripts

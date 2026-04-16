@@ -12,5 +12,10 @@ new
 ?>
 
 <div>
-    {{-- Simplicity is the consequence of refined emotions. - Jean D'Alembert --}}
+    <p></p>
+    <div class="flex gap-3">
+        <x-stats title="Treatments" :number="50" /> 
+        <x-stats title="Appointments" :number="50" /> 
+        <x-stats title="Medical Records" :number="50" /> 
+    </div>
 </div>

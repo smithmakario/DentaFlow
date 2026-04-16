@@ -102,9 +102,9 @@
 <a class="text-on-surface-variant text-sm font-medium hover:text-primary transition-colors" href="#">Pricing</a>
 <a class="text-on-surface-variant text-sm font-medium hover:text-primary transition-colors" href="#">Contact</a>
 </nav>
-<button  class="bg-primary text-white text-sm font-bold px-6 py-2.5 rounded-full hover:shadow-lg hover:shadow-primary/20 transition-all">
+<a href="{{ route('register') }}" class="bg-primary text-white text-sm font-bold px-6 py-2.5 rounded-full hover:shadow-lg hover:shadow-primary/20 transition-all">
                 Register
-            </button>
+            </a>
 </div>
 </header>
 <main>
@@ -121,9 +121,9 @@
                         </p>
 </div>
 <div class="flex flex-wrap gap-4">
-<button  class="hero-gradient text-white font-bold h-14 px-8 rounded-full shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform">
+<a href="{{ route('register') }}"  class="flex items-center hero-gradient text-white font-bold h-14 px-8 rounded-full shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform">
                             Register
-                        </button>
+                        </a>
 <button class="bg-surface-container-high text-on-surface font-bold h-14 px-8 rounded-full hover:bg-surface-variant transition-colors">
                             Explore Features
                         </button>
