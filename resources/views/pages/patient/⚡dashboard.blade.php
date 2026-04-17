@@ -12,12 +12,12 @@ new
         {
             return [
                 'headers' => [
-                    ['id' => 'doctor_name', 'label' => 'Doctor name'],
-                    ['id' => 'treatment_id', 'label' => 'Treatment'],
-                    ['id' => 'scheduled_at', 'label' => 'Scheduled at'],
-                    ['id' => 'status', 'label' => 'Status'],
+                    ['index' => 'doctor_id', 'label' => 'Doctor name'],
+                    ['index' => 'scheduled_at', 'label' => 'Scheduled at'],
+                    ['index' => 'notes', 'label' => 'Notes'],
+                    ['index' => 'status', 'label' => 'Status'],
                 ],
-                'rows' => Appointment::all()
+                'rows' => Appointment::with('doctor')->limit(5)->get()
             ];
         }
     };
@@ -34,19 +34,63 @@ new
     </div>
     <div class="flex gap-3 mb-6">
         <div class="basis-1/2">
-            <x-card>
+            <x-card class="h-full">
                 <x-slot:header>
-                    <x-icon name="user-circle" outline class="h-8 w-8" /> Recent Appointments
+                    <div class="flex gap-2 items-center">
+                        <x-icon name="user-circle" outline class="h-8 w-8" /> Recent Appointments
+                    </div>
+                    <a href="{{ route('patient.appointments')}}">
+                        <x-button icon="clock" text="appointments" />
+                    </a>
                 </x-slot:header>
-                <x-table :$headers :$rows />
+                <x-table :$headers :$rows>
+                    @interact('column_doctor_id', $row)
+                    <div>
+                        <span>{{ $row['doctor']['first_name'].' '.  $row['doctor']['last_name'] }}</span>
+                        <x-badge :text="'@'.$row['doctor']['username']" />
+                    </div>            
+                    @endinteract
+
+                    @interact('column_status', $row)
+                    <x-badge :text="$row['status']" color="zinc"/>
+                    @endinteract
+                </x-table>
             </x-card>
         </div>
         <div class="basis-1/2">
             <x-card>
                 <x-slot:header>
-                    <x-icon name="folder-open" outline class="h-8 w-8" /> Treatments
+                    <div class="flex items-center gap-2">
+                        <x-icon name="folder-open" outline class="h-8 w-8" /> Treatments
+                    </div>
+                    <a href="{{ route('patient.calendar') }}">
+                        <x-button text="Book appointment" />
+                    </a>
                 </x-slot:header>
+                <div id="calendar" class="min-h-[500px] w-full"></div>
             </x-card>
         </div>
     </div>
 </div>
+@script
+<script>
+const calendarElement = document.querySelector("#calendar");
+let calendar = new Calendar(calendarElement, {
+    height: '100%',
+    expandRows: true,
+    plugins: [dayGridPlugin, interactionPlugin],
+    initialView: 'dayGridMonth',
+
+    events: '{{ route("calendar.appointments") }}',
+
+    dateClick(info) {
+        Livewire.dispatch('date-selected', { date: info.dateStr });
+    },
+
+    eventClick(info) {
+        Livewire.dispatch('event-selected', { id: info.event.id });
+    }
+});
+calendar.render();
+</script>
+@endscript

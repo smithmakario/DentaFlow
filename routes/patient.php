@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('patient')->middleware('auth', 'user_type:patient,admin')->group(function () {
     Route::livewire('', 'pages::patient.dashboard')->name('patient.dashboard');
     Route::livewire('appointments', 'pages::patient.appointments')->name('patient.appointments');
+    Route::livewire('appointments/calendar', 'pages::patient.calendar')->name('patient.calendar');
     Route::livewire('medical-records', 'pages::patient.medical-records')->name('patient.medical-records');
     Route::livewire('profile', 'pages::patient.profile')->name('patient.profile');
 });

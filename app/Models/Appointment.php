@@ -13,4 +13,9 @@ class Appointment extends Model
         'status',
         'scheduled_at',
     ];
+
+    public function doctor()
+    {
+        return $this->belongsTo(User::class, 'doctor_id');
+    }
 }

@@ -32,7 +32,7 @@ new
                     ['index' => 'notes', 'label' => 'Notes'],
                     ['index' => 'status', 'label' => 'Status'],
                 ],
-                'rows' => Appointment::all()
+                'rows' => Appointment::with('doctor')->get()
             ];
         }
 
@@ -79,8 +79,22 @@ new
     <x-card>
         <x-slot:header>
             Appointments
-            <x-button text="Create Appointment" icon="plus" x-on:click="$tsui.open.modal('app-modal')" />
+            <a href="{{ route('patient.calendar') }}">
+                <x-button text="Calendar" icon="calendar" />
+            </a>
         </x-slot:header>
-        <x-table :$headers :$rows />
+        <x-table :$headers :$rows>
+            @interact('column_doctor_id', $row)
+            <div>
+                <span>{{ $row['doctor']['first_name'].' '.  $row['doctor']['last_name'] }}</span>
+                <x-badge :text="'@'.$row['doctor']['username']" />
+            </div>            
+            @endinteract
+
+            @interact('column_status', $row)
+            <x-badge :text="$row['status']" color="zinc"/>
+            @endinteract
+        </x-table>
     </x-card>
 </div>
+
