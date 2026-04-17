@@ -27,12 +27,12 @@ new
         {
             return [
                 'headers' => [
-                    ['index' => 'doctor_id', 'label' => 'Doctor name'],
+                    ['index' => 'clinician_id', 'label' => 'Clinician name'],
+                    ['index' => 'title', 'label' => 'Title'], 
                     ['index' => 'scheduled_at', 'label' => 'Scheduled at'],
-                    ['index' => 'notes', 'label' => 'Notes'],
                     ['index' => 'status', 'label' => 'Status'],
                 ],
-                'rows' => Appointment::with('doctor')->get()
+                'rows' => Appointment::with('clinician')->get()
             ];
         }
 
@@ -46,6 +46,7 @@ new
                 ];
             })->toArray();
         }
+
 
         public function save()
         {
@@ -84,11 +85,20 @@ new
             </a>
         </x-slot:header>
         <x-table :$headers :$rows>
-            @interact('column_doctor_id', $row)
-            <div>
-                <span>{{ $row['doctor']['first_name'].' '.  $row['doctor']['last_name'] }}</span>
-                <x-badge :text="'@'.$row['doctor']['username']" />
+            @interact('column_clinician_id', $row)
+            <div class="flex items-center gap-3">
+                <x-avatar sm />
+                <div>
+                    <span class="font-bold">{{ $row['clinician']['first_name'].' '.  $row['clinician']['last_name'] }}</span>
+                    <div class="mt-2">
+                        <x-badge :text="'@'.$row['clinician']['username']" />
+                    </div>
+                </div>
             </div>            
+            @endinteract
+
+            @interact('column_scheduled_at', $row)
+            <span>{{ \Illuminate\Support\Carbon::createFromFormat('Y-m-d H:i:s', $row->scheduled_at)->format('F d, Y H:i a') }}</span>
             @endinteract
 
             @interact('column_status', $row)

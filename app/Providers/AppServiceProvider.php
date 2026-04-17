@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Appointment;
+use App\Observers\AppointmentObserver;
 use App\Services\TokenGeneratorService;
 use Illuminate\Support\ServiceProvider;
-use TallStackUi\Facades\TallStackUi;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Appointment::observe(AppointmentObserver::class);
     }
 }

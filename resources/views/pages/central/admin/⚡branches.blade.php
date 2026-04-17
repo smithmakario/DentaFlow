@@ -32,6 +32,7 @@ new #[Layout('layouts::admin')] class extends Component
         $user = auth()->user();
         $token = $tokenGenerator->signed([
             'user_id' => $user->id,
+            'username' => $user->username,
             'user_type' => 'clinician',
         ]);
         $tenant = Tenant::find($tenant);

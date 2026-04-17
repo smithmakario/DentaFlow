@@ -12,12 +12,12 @@ new
         {
             return [
                 'headers' => [
-                    ['index' => 'doctor_id', 'label' => 'Doctor name'],
+                    ['index' => 'clinician_id', 'label' => 'Clinician name'],
+                    ['index' => 'title', 'label' => 'Title'],
                     ['index' => 'scheduled_at', 'label' => 'Scheduled at'],
-                    ['index' => 'notes', 'label' => 'Notes'],
                     ['index' => 'status', 'label' => 'Status'],
                 ],
-                'rows' => Appointment::with('doctor')->limit(5)->get()
+                'rows' => Appointment::with('clinician')->limit(5)->get()
             ];
         }
     };
@@ -25,31 +25,40 @@ new
 
 <div>
     <div class="mb-6">
-        <p>Welcome, {{ auth()->user()->username }}</p>
+        <p class="text-xl">Welcome, {{ ucfirst(auth()->user()->username) }}</p>
     </div>
     <div class="flex gap-3 mb-6">
         <x-stats title="Treatments" :number="20" icon="swatch"  />
         <x-stats title="Appointments" :number="4" icon="swatch" color="yellow"  />
         <x-stats title="Medical Records" :number="123" icon="swatch" color="green" />
     </div>
-    <div class="flex gap-3 mb-6">
+    <div class="flex gap-3 mb-6 flex-col">
         <div class="basis-1/2">
             <x-card class="h-full">
                 <x-slot:header>
                     <div class="flex gap-2 items-center">
-                        <x-icon name="user-circle" outline class="h-8 w-8" /> Recent Appointments
+                        <x-icon name="users" outline class="h-8 w-8" /> Previous Appointments
                     </div>
                     <a href="{{ route('patient.appointments')}}">
-                        <x-button icon="clock" text="appointments" />
+                        <x-button icon="clock" text="View" outline/>
                     </a>
                 </x-slot:header>
                 <x-table :$headers :$rows>
-                    @interact('column_doctor_id', $row)
-                    <div>
-                        <span>{{ $row['doctor']['first_name'].' '.  $row['doctor']['last_name'] }}</span>
-                        <x-badge :text="'@'.$row['doctor']['username']" />
-                    </div>            
-                    @endinteract
+            @interact('column_clinician_id', $row)
+            <div class="flex items-center gap-3">
+                <x-avatar sm />
+                <div>
+                    <span class="font-bold">{{ $row['clinician']['first_name'].' '.  $row['clinician']['last_name'] }}</span>
+                    <div class="mt-2">
+                        <x-badge :text="'@'.$row['clinician']['username']" />
+                    </div>
+                </div>
+            </div>            
+            @endinteract
+
+            @interact('column_scheduled_at', $row)
+            <span>{{ \Illuminate\Support\Carbon::createFromFormat('Y-m-d H:i:s', $row->scheduled_at)->format('F d, Y H:i a') }}</span>
+            @endinteract
 
                     @interact('column_status', $row)
                     <x-badge :text="$row['status']" color="zinc"/>
@@ -57,11 +66,11 @@ new
                 </x-table>
             </x-card>
         </div>
-        <div class="basis-1/2">
+        <div class="basis-1/2 order-first">
             <x-card>
                 <x-slot:header>
                     <div class="flex items-center gap-2">
-                        <x-icon name="folder-open" outline class="h-8 w-8" /> Treatments
+                        <x-icon name="calendar" outline class="h-8 w-8" /> Calendar
                     </div>
                     <a href="{{ route('patient.calendar') }}">
                         <x-button text="Book appointment" />
@@ -92,5 +101,8 @@ let calendar = new Calendar(calendarElement, {
     }
 });
 calendar.render();
+setTimeout(() => {
+    calendar.updateSize();
+}, 500)
 </script>
 @endscript
