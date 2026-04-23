@@ -16,4 +16,14 @@ class AppointmentQueue extends Model
         'position',
         'status',
     ];
+
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(User::class, 'patient_id');
+    }
 }
