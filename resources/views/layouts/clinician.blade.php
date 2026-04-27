@@ -19,6 +19,7 @@
     </head>
     <body>
         <x-toast />
+        <x-dialog />
         <x-layout>
             <x-slot:header>
                 <x-layout.header>

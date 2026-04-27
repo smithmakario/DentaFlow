@@ -23,6 +23,8 @@ class AppointmentForm extends Form
     #[Validate('required')]
     public $schedule_time;
 
+    public $status;
+
     public $notes;
 
     public function setAppointment(Appointment $app)
@@ -39,6 +41,8 @@ class AppointmentForm extends Form
 
         $this->schedule_time = $schedule_time;
 
+        $this->status = $app->status;
+
         $this->notes = $app->notes;
     }
 
@@ -49,6 +53,7 @@ class AppointmentForm extends Form
             'title' => $this->title,
             'scheduled_at' => $scheduled_at,
             'notes' => $this->notes,
+            'status' => $this->status,
         ]);
         $this->reset();
         return $this->appointment;
@@ -63,6 +68,7 @@ class AppointmentForm extends Form
             'patient_id' => auth()->user()->id,
             'scheduled_at' => $scheduled_at,
             'notes' => $this->notes,
+            'status' => 'pending',
         ]);
         $this->reset();
         return $appointment;

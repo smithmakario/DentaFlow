@@ -26,8 +26,6 @@ Route::middleware([
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
 
-    Route::get('/api/calendar/appointments', AppointmentAPIController::class)->name('calendar.appointments');
-
     require_once __DIR__ . '/auth.php';
 
     require_once __DIR__ . '/clinician.php';

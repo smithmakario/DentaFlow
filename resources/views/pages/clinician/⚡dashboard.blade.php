@@ -237,7 +237,7 @@ let calendar = new Calendar(calendarElement, {
         center: 'title',
         right: 'today,dayGridMonth,timeGridWeek,timeGridDay',
     },
-    events: '{{ route("calendar.appointments") }}',
+    events: '{{ route("clinician.calendar.appointments") }}',
     dateClick(info) {
         Livewire.dispatch('date-selected', { date: info.dateStr });
     },

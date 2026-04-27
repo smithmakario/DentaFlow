@@ -134,7 +134,7 @@ let calendar = new Calendar(calendarElement, {
         right: 'today,dayGridMonth,timeGridWeek,timeGridDay',        
     },
 
-    events: '{{ route("calendar.appointments") }}',
+    events: '{{ route("patient.calendar.appointments") }}',
 
     dateClick(info) {
         console.log(info);

@@ -18,5 +18,6 @@ foreach (config('tenancy.central_domains') as $domain) {
 
         Route::livewire('admin', 'pages::central.admin.dashboard')->middleware('auth')->name('admin.dashboard');
         Route::livewire('admin/branches', 'pages::central.admin.branches')->middleware('auth')->name('admin.branches');
+        Route::livewire('admin/users', 'pages::central.admin.global-users')->middleware('auth')->name('admin.users');
     });
 }
