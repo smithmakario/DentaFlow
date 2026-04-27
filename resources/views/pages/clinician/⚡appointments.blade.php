@@ -1,10 +1,7 @@
 <?php
 
-use App\Livewire\Forms\AppointmentForm;
-use App\Models\Appointment;
 use App\Models\AppointmentQueue;
 use App\Models\Treatment;
-use App\Models\User;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -20,7 +17,7 @@ new
 
         public $selectedQueueItem;
 
-        public AppointmentForm $form;
+        public $queueStatus = '';
 
         public $treatmentsModal = false;
 
@@ -99,22 +96,24 @@ new
                 ->findOrFail($queueId);
 
             $this->selectedQueueItem = $queueItem;
-            $this->form->setAppointment($queueItem->appointment);
+            $this->queueStatus = $queueItem->status;
             $this->modal = true;
         }
 
         public function resetEditModal()
         {
-            $this->form->reset();
+            $this->queueStatus = '';
             $this->selectedQueueItem = null;
         }
 
         public function save()
         {
-            $this->form->update();
+            $this->validate(['queueStatus' => 'required']);
+            $this->selectedQueueItem->update(['status' => $this->queueStatus]);
             $this->modal = false;
             $this->selectedQueueItem = null;
-            $this->toast()->success('Appointment updated')->send();
+            $this->queueStatus = '';
+            $this->toast()->success('Queue status updated')->send();
         }
 
         public function openTreatmentsModal($queueId)
@@ -299,7 +298,7 @@ new
         </x-table>
     </x-card>
 
-    <x-modal title="Edit Appointment" wire="modal" x-on:close="$wire.resetEditModal()">
+    <x-modal title="Queue Status" wire="modal" x-on:close="$wire.resetEditModal()">
         <form wire:submit="save" class="space-y-4">
             @if($selectedQueueItem)
                 <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
@@ -311,40 +310,31 @@ new
                     </div>
                 </div>
 
-                <x-select.styled label="Status" :options="[
-                    ['label' => 'Pending', 'value' => 'pending'],
-                    ['label' => 'Confirmed', 'value' => 'confirmed'],
+                <x-select.styled label="Queue Status" :options="[
+                    ['label' => 'Queued', 'value' => 'queued'],
+                    ['label' => 'In Progress', 'value' => 'in_progress'],
+                    ['label' => 'Checked Out', 'value' => 'checked_out'],
                     ['label' => 'Completed', 'value' => 'completed'],
                     ['label' => 'Cancelled', 'value' => 'cancelled'],
-                ]" wire:model="form.status" />
+                ]" wire:model="queueStatus" />
 
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-gray-500">Current:</span>
                     @php
-                        $statusColor = match($form->status) {
+                        $statusColor = match($queueStatus) {
                             'completed' => 'green',
-                            'confirmed' => 'blue',
-                            'pending' => 'yellow',
+                            'queued' => 'blue',
+                            'in_progress' => 'yellow',
+                            'checked_out' => 'zinc',
                             'cancelled' => 'red',
                             default => 'zinc'
                         };
                     @endphp
-                    <x-badge :text="ucfirst($form->status)" :color="$statusColor" light />
+                    <x-badge :text="ucfirst(str_replace('_', ' ', $queueStatus))" :color="$statusColor" light />
                 </div>
             @endif
 
-            <x-input label="Title *" placeholder="Enter title" wire:model="form.title" />
-
-            <div class="flex gap-2">
-                <div class="basis-1/2">
-                    <x-date label="Schedule date *" placeholder="Select schedule date" wire:model="form.schedule_date" />
-                </div>
-                <div class="basis-1/2">
-                    <x-time label="Schedule time *" wire:model="form.schedule_time" placeholder="Select schedule time" />
-                </div>
-            </div>
-
-            <x-textarea label="Notes" placeholder="Add notes" wire:model="form.notes" />
+            <p class="text-xs text-gray-400">To edit appointment details (title, date, notes), use the Schedule view.</p>
 
             <x-button type="submit" text="Update" />
         </form>
