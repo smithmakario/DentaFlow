@@ -199,10 +199,12 @@ new
 
                     @interact('column_status', $row)
                     @php
+                        $isPast = \Illuminate\Support\Carbon::parse($row['appointment']['scheduled_at'])->isPast();
                         $statusColor = match($row->status) {
                             'completed' => 'green',
-                            'queued' => 'blue',
+                            'queued' => $isPast ? 'red' : 'blue',
                             'in_progress' => 'yellow',
+                            'checked_out' => 'zinc',
                             'cancelled' => 'red',
                             default => 'zinc'
                         };

@@ -11,6 +11,7 @@ Route::prefix('clinician')->middleware('auth', 'user_type:clinician,admin')->gro
     Route::livewire('', 'pages::clinician.dashboard')->name('clinician.dashboard');
     Route::livewire('appointments', 'pages::clinician.appointments')->name('clinician.appointments');
     Route::livewire('appointments/calendar', 'pages::clinician.calendar')->name('clinician.calendar');
+    Route::livewire('treatments', 'pages::clinician.treatments')->name('clinician.treatments');
     Route::livewire('profile', 'pages::clinician.profile')->name('clinician.profile');
 
 });

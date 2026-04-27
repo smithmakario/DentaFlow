@@ -46,6 +46,7 @@
                     </x-slot:brand>
                     <x-side-bar.item text="Home" icon="home" :route="route('clinician.dashboard')" />
                     <x-side-bar.item text="Appointments" icon="clock" :route="route('clinician.appointments')" />
+                    <x-side-bar.item text="Treatments" icon="clipboard-document-list" :route="route('clinician.treatments')" />
                 </x-side-bar>
             </x-slot:menu>
 

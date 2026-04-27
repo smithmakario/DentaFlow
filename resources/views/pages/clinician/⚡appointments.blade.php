@@ -3,6 +3,7 @@
 use App\Livewire\Forms\AppointmentForm;
 use App\Models\Appointment;
 use App\Models\AppointmentQueue;
+use App\Models\Treatment;
 use App\Models\User;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -21,6 +22,22 @@ new
 
         public AppointmentForm $form;
 
+        public $treatmentsModal = false;
+
+        public $selectedQueueItemForTreatments;
+
+        public $editingTreatmentId;
+
+        public $treatmentName = '';
+
+        public $treatmentToothCode = '';
+
+        public $treatmentDescription = '';
+
+        public $treatmentCost = '';
+
+        public $treatmentCategory = '';
+
         public function with(): array
         {
             return [
@@ -32,7 +49,7 @@ new
                     ['index' => 'status', 'label' => 'Status'],
                     ['index' => 'action', 'label' => 'Action'],
                 ],
-                'rows' => AppointmentQueue::with(['appointment', 'patient'])
+                'rows' => AppointmentQueue::with(['appointment.treatments', 'patient'])
                     ->where('clinician_id', auth()->id())
                     ->orderBy('position')
                     ->get()
@@ -69,6 +86,12 @@ new
             $next->update(['position' => $temp]);
         }
 
+        public function markCheckedOut($id)
+        {
+            $queueItem = AppointmentQueue::where('clinician_id', auth()->id())->findOrFail($id);
+            $queueItem->update(['status' => 'checked_out']);
+        }
+
         public function editAppointment($queueId)
         {
             $queueItem = AppointmentQueue::with('appointment.patient')
@@ -92,6 +115,123 @@ new
             $this->modal = false;
             $this->selectedQueueItem = null;
             $this->toast()->success('Appointment updated')->send();
+        }
+
+        public function openTreatmentsModal($queueId)
+        {
+            $queueItem = AppointmentQueue::with('appointment.treatments', 'patient')
+                ->where('clinician_id', auth()->id())
+                ->findOrFail($queueId);
+
+            $this->selectedQueueItemForTreatments = $queueItem;
+            $this->resetTreatmentForm();
+            $this->treatmentsModal = true;
+        }
+
+        public function resetTreatmentForm()
+        {
+            $this->editingTreatmentId = null;
+            $this->treatmentName = '';
+            $this->treatmentToothCode = '';
+            $this->treatmentDescription = '';
+            $this->treatmentCost = '';
+            $this->treatmentCategory = '';
+        }
+
+        public function closeTreatmentsModal()
+        {
+            $this->treatmentsModal = false;
+            $this->selectedQueueItemForTreatments = null;
+            $this->resetTreatmentForm();
+        }
+
+        public function addTreatment()
+        {
+            $this->validate([
+                'treatmentName' => 'required',
+                'treatmentCost' => 'required|numeric|min:0',
+                'treatmentCategory' => 'required',
+            ]);
+
+            Treatment::create([
+                'appointment_id' => $this->selectedQueueItemForTreatments->appointment_id,
+                'name' => $this->treatmentName,
+                'tooth_code' => $this->treatmentToothCode,
+                'description' => $this->treatmentDescription,
+                'base_cost' => $this->treatmentCost,
+                'category' => $this->treatmentCategory,
+            ]);
+
+            $this->resetTreatmentForm();
+            $this->selectedQueueItemForTreatments->load('appointment.treatments');
+            $this->toast()->success('Treatment added')->send();
+        }
+
+        public function editTreatment($treatmentId)
+        {
+            $treatment = Treatment::findOrFail($treatmentId);
+            $this->editingTreatmentId = $treatmentId;
+            $this->treatmentName = $treatment->name;
+            $this->treatmentToothCode = $treatment->tooth_code;
+            $this->treatmentDescription = $treatment->description;
+            $this->treatmentCost = $treatment->base_cost;
+            $this->treatmentCategory = $treatment->category;
+        }
+
+        public function updateTreatment()
+        {
+            $this->validate([
+                'treatmentName' => 'required',
+                'treatmentCost' => 'required|numeric|min:0',
+                'treatmentCategory' => 'required',
+            ]);
+
+            $treatment = Treatment::findOrFail($this->editingTreatmentId);
+            $treatment->update([
+                'name' => $this->treatmentName,
+                'tooth_code' => $this->treatmentToothCode,
+                'description' => $this->treatmentDescription,
+                'base_cost' => $this->treatmentCost,
+                'category' => $this->treatmentCategory,
+            ]);
+
+            $this->resetTreatmentForm();
+            $this->selectedQueueItemForTreatments->load('appointment.treatments');
+            $this->toast()->success('Treatment updated')->send();
+        }
+
+        public function deleteTreatment($treatmentId)
+        {
+            $this->dialog()->confirm('Delete treatment?', 'This action cannot be undone.')
+                ->confirm('Delete', 'red', 'deleteTreatmentConfirmed')
+                ->cancel()
+                ->send();
+
+            $this->editingTreatmentId = $treatmentId;
+        }
+
+        public function deleteTreatmentConfirmed()
+        {
+            Treatment::findOrFail($this->editingTreatmentId)->delete();
+            $this->editingTreatmentId = null;
+            $this->selectedQueueItemForTreatments->load('appointment.treatments');
+            $this->toast()->success('Treatment deleted')->send();
+        }
+
+        public function getCategoryOptionsProperty()
+        {
+            return [
+                ['label' => 'Cleaning', 'value' => 'Cleaning'],
+                ['label' => 'Filling', 'value' => 'Filling'],
+                ['label' => 'Extraction', 'value' => 'Extraction'],
+                ['label' => 'Crown', 'value' => 'Crown'],
+                ['label' => 'Bridge', 'value' => 'Bridge'],
+                ['label' => 'Root Canal', 'value' => 'Root Canal'],
+                ['label' => 'Whitening', 'value' => 'Whitening'],
+                ['label' => 'Checkup', 'value' => 'Checkup'],
+                ['label' => 'Surgery', 'value' => 'Surgery'],
+                ['label' => 'Other', 'value' => 'Other'],
+            ];
         }
     };
 ?>
@@ -139,11 +279,18 @@ new
                     'completed' => 'green',
                     'queued' => 'blue',
                     'in_progress' => 'yellow',
+                    'checked_out' => 'zinc',
                     'cancelled' => 'red',
                     default => 'zinc'
                 };
             @endphp
-            <x-badge :text="ucfirst(str_replace('_', ' ', $row->status))" :color="$statusColor" light />
+            <div class="flex items-center gap-2">
+                <x-badge :text="ucfirst(str_replace('_', ' ', $row->status))" :color="$statusColor" light />
+                @if($row->status === 'in_progress')
+                    <x-button text="Treatments" icon="clipboard-document-list" xs wire:click="openTreatmentsModal({{ $row->id }})" />
+                    <x-button text="Check Out" icon="arrow-right-on-square" xs wire:click="markCheckedOut({{ $row->id }})" />
+                @endif
+            </div>
             @endinteract
 
             @interact('column_action', $row)
@@ -201,5 +348,77 @@ new
 
             <x-button type="submit" text="Update" />
         </form>
+    </x-modal>
+
+    <x-modal title="Treatments" wire="treatmentsModal" x-on:close="$wire.closeTreatmentsModal()">
+        @if($selectedQueueItemForTreatments)
+            <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg mb-4">
+                <x-avatar lg />
+                <div>
+                    <p class="text-lg font-bold">{{ $selectedQueueItemForTreatments->patient->first_name }} {{ $selectedQueueItemForTreatments->patient->last_name }}</p>
+                    <p class="text-sm text-gray-500">{{ $selectedQueueItemForTreatments->appointment->title }}</p>
+                </div>
+            </div>
+
+            @if($selectedQueueItemForTreatments->appointment->treatments->count() > 0)
+                <div class="divide-y mb-4">
+                    @foreach($selectedQueueItemForTreatments->appointment->treatments as $treatment)
+                        <div class="flex items-center justify-between py-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium">{{ $treatment->name }}</span>
+                                    <x-badge :text="$treatment->category" xs light />
+                                </div>
+                                @if($treatment->tooth_code || $treatment->description)
+                                    <p class="text-sm text-gray-500">
+                                        {{ $treatment->tooth_code ? 'Tooth: '.$treatment->tooth_code : '' }}
+                                        {{ $treatment->tooth_code && $treatment->description ? ' — ' : '' }}
+                                        {{ $treatment->description ?? '' }}
+                                    </p>
+                                @endif
+                                <p class="text-sm font-semibold">${{ number_format($treatment->base_cost, 2) }}</p>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <x-button icon="pencil" xs wire:click="editTreatment({{ $treatment->id }})" />
+                                <x-button icon="trash" xs color="red" wire:click="deleteTreatment({{ $treatment->id }})" />
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-sm text-gray-500 mb-4">No treatments added yet.</p>
+            @endif
+
+            <hr class="mb-4">
+
+            <p class="text-sm font-semibold mb-3">{{ $editingTreatmentId ? 'Edit Treatment' : 'Add Treatment' }}</p>
+            <div class="space-y-3">
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <x-input label="Procedure name *" placeholder="e.g. Composite filling" wire:model="treatmentName" />
+                    </div>
+                    <div class="w-32">
+                        <x-input label="Tooth code" placeholder="e.g. 14" wire:model="treatmentToothCode" />
+                    </div>
+                </div>
+                <x-textarea label="Description" placeholder="Add notes about this treatment" wire:model="treatmentDescription" />
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <x-input label="Cost *" placeholder="0.00" wire:model="treatmentCost" prefix="$" />
+                    </div>
+                    <div class="flex-1">
+                        <x-select.styled label="Category *" :options="$this->categoryOptions" wire:model="treatmentCategory" />
+                    </div>
+                </div>
+                <div class="flex gap-2 justify-end">
+                    @if($editingTreatmentId)
+                        <x-button text="Cancel" outline wire:click="resetTreatmentForm" />
+                        <x-button text="Update" wire:click="updateTreatment" />
+                    @else
+                        <x-button text="Add" wire:click="addTreatment" />
+                    @endif
+                </div>
+            </div>
+        @endif
     </x-modal>
 </div>
