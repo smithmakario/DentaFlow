@@ -35,7 +35,7 @@
             </x-slot:header>
 
             <x-slot:menu>
-                <x-side-bar>
+                <x-side-bar smart>
                     <x-slot:brand>
                         <div class="mt-3">
                             <h2 class="text-xl text-center text-secondary-500 font-bold">Admin</h2>

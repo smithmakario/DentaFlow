@@ -57,7 +57,7 @@ new
                 ->latest()
                 ->get()
                 ->map(fn($a) => [
-                    'label' => $a->title . ' — ' . ($a->patient->first_name ?? '') . ' ' . ($a->patient->last_name ?? ''),
+                    'label' => $a->title . ' — ' . ($a->patient->first_name ?? '') . ' ' . ($a->patient->last_name ?? '') .' — ' . $a->scheduled_at,
                     'value' => (string) $a->id,
                 ])
                 ->toArray();
@@ -149,7 +149,9 @@ new
         public function deleteTreatment($id)
         {
             $this->editingTreatmentId = $id;
-            $this->dialog()->confirm('Delete treatment?', 'This action cannot be undone.')
+            $this
+                ->dialog()
+                ->confirm('Delete treatment?', 'This action cannot be undone.')
                 ->confirm('Delete', 'red', 'deleteConfirmed')
                 ->cancel()
                 ->send();
@@ -225,7 +227,7 @@ new
 
             <x-textarea label="Description" placeholder="Add notes about this treatment" wire:model="treatmentDescription" />
 
-            <x-input label="Cost *" placeholder="0.00" wire:model="treatmentCost" prefix="$" />
+            <x-input label="Cost *" placeholder="0.00" wire:model="treatmentCost" prefix="₦" />
 
             <x-button type="submit" :text="$editingTreatmentId ? 'Update' : 'Add'" />
         </form>

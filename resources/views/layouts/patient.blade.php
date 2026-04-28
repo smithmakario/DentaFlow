@@ -38,14 +38,14 @@
             </x-slot:header>
 
             <x-slot:menu>
-                <x-side-bar>
+                <x-side-bar smart>
                     <x-slot:brand>
                         <div class="border-b-1 p-3 border-primary-500">
                             <h2 class="text-xl text-center text-secondary-500 font-bold">Patient</h2>
                         </div>
                     </x-slot:brand>
                     <x-side-bar.item text="Home" icon="home" :route="route('patient.dashboard')" />
-                    <x-side-bar.item text="Appointments" icon="clock" :route="route('patient.appointments')" />
+                    <x-side-bar.item text="Appointments" icon="clock" :route="route('patient.appointments')" match="patient.appointments*" />
                     <x-side-bar.item text="Documents" icon="arrow-up-tray" :route="route('patient.documents')" />
                     <x-side-bar.item text="Medical Records" icon="rectangle-stack" :route="route('patient.medical-records')" />
                 </x-side-bar>

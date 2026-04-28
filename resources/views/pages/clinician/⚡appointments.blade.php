@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\AppointmentQueue;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Treatment;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -85,8 +87,39 @@ new
 
         public function markCheckedOut($id)
         {
-            $queueItem = AppointmentQueue::where('clinician_id', auth()->id())->findOrFail($id);
+            $queueItem = AppointmentQueue::with('appointment.treatments')
+                ->where('clinician_id', auth()->id())
+                ->findOrFail($id);
+
             $queueItem->update(['status' => 'checked_out']);
+
+            $appointment = $queueItem->appointment;
+
+            if ($appointment->treatments->count() > 0 && !$appointment->invoice) {
+                $subtotal = $appointment->treatments->sum('base_cost');
+                $lastInvoice = Invoice::latest('id')->first();
+                $nextNumber = $lastInvoice ? ((int) substr($lastInvoice->invoice_number, 4)) + 1 : 1;
+
+                $invoice = Invoice::create([
+                    'appointment_id' => $appointment->id,
+                    'invoice_number' => 'INV-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT),
+                    'subtotal' => $subtotal,
+                    'total' => $subtotal,
+                    'status' => 'draft',
+                    'issued_at' => now(),
+                ]);
+
+                foreach ($appointment->treatments as $treatment) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'treatment_id' => $treatment->id,
+                        'description' => $treatment->name . ($treatment->description ? ' — ' . $treatment->description : ''),
+                        'quantity' => 1,
+                        'unit_price' => $treatment->base_cost,
+                        'subtotal' => $treatment->base_cost,
+                    ]);
+                }
+            }
         }
 
         public function editAppointment($queueId)
@@ -287,7 +320,7 @@ new
                 <x-badge :text="ucfirst(str_replace('_', ' ', $row->status))" :color="$statusColor" light />
                 @if($row->status === 'in_progress')
                     <x-button text="Treatments" icon="clipboard-document-list" xs wire:click="openTreatmentsModal({{ $row->id }})" />
-                    <x-button text="Check Out" icon="arrow-right-on-square" xs wire:click="markCheckedOut({{ $row->id }})" />
+                    <x-button text="Check Out" icon="arrow-right-on-rectangle" xs wire:click="markCheckedOut({{ $row->id }})" />
                 @endif
             </div>
             @endinteract
@@ -366,7 +399,7 @@ new
                                         {{ $treatment->description ?? '' }}
                                     </p>
                                 @endif
-                                <p class="text-sm font-semibold">${{ number_format($treatment->base_cost, 2) }}</p>
+                                <p class="text-sm font-semibold">₦{{ number_format($treatment->base_cost, 2) }}</p>
                             </div>
                             <div class="flex items-center gap-1">
                                 <x-button icon="pencil" xs wire:click="editTreatment({{ $treatment->id }})" />
@@ -394,7 +427,7 @@ new
                 <x-textarea label="Description" placeholder="Add notes about this treatment" wire:model="treatmentDescription" />
                 <div class="flex gap-2">
                     <div class="flex-1">
-                        <x-input label="Cost *" placeholder="0.00" wire:model="treatmentCost" prefix="$" />
+                        <x-input label="Cost *" placeholder="0.00" wire:model="treatmentCost" prefix="₦" />
                     </div>
                     <div class="flex-1">
                         <x-select.styled label="Category *" :options="$this->categoryOptions" wire:model="treatmentCategory" />

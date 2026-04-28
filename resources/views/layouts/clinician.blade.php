@@ -38,16 +38,17 @@
             </x-slot:header>
 
             <x-slot:menu>
-                <x-side-bar>
-                    <x-slot:brand>
-                        <div class="border-b-1 p-3 border-primary-500">
-                            <h2 class="text-xl text-center text-primary-500">Clinician</h2>
-                        </div>
-                    </x-slot:brand>
-                    <x-side-bar.item text="Home" icon="home" :route="route('clinician.dashboard')" />
-                    <x-side-bar.item text="Appointments" icon="clock" :route="route('clinician.appointments')" />
-                    <x-side-bar.item text="Treatments" icon="clipboard-document-list" :route="route('clinician.treatments')" />
-                </x-side-bar>
+                    <x-side-bar smart>
+                        <x-slot:brand>
+                            <div class="border-b-1 p-3 border-primary-500">
+                                <h2 class="text-xl text-center text-primary-500">Clinician</h2>
+                            </div>
+                        </x-slot:brand>
+                        <x-side-bar.item text="Home" icon="home" :route="route('clinician.dashboard')" />
+                        <x-side-bar.item text="Appointments" icon="clock" :route="route('clinician.appointments')" match="clinician.appointments*" />
+                        <x-side-bar.item text="Treatments" icon="clipboard-document-list" :route="route('clinician.treatments')" />
+                        <x-side-bar.item text="Invoices" icon="banknotes" :route="route('clinician.invoices')" />
+                    </x-side-bar>
             </x-slot:menu>
 
             {{ $slot }}
