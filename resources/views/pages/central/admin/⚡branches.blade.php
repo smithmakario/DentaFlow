@@ -1,7 +1,9 @@
 <?php
 
+
 use App\Models\GlobalUser;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Services\TokenGeneratorService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
