@@ -2,6 +2,9 @@
 
 use App\Livewire\Forms\AppointmentForm;
 use App\Models\Appointment;
+use App\Models\DentalService;
+use App\Models\Document;
+use App\Models\Treatment;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Livewire\Attributes\Computed;
@@ -20,17 +23,27 @@ new
 
         public $modal;
 
+        public $selectedServiceId = '';
+
         public AppointmentForm $form;
 
         #[Computed]
         public function clinicians()
         {
-            return User::where('user_type', 'clinician')->get()->map(function ($user) {
-                return [
-                    'value' => $user->id,
-                    'label' => $user->username,
-                ];
-            })->toArray();
+            return User::where('user_type', 'clinician')
+                ->with('userProfile')
+                ->get()
+                ->map(function ($user) {
+                    $profile = $user->userProfile;
+                    $parts = [];
+                    if ($profile?->specialization) $parts[] = $profile->specialization;
+                    if ($profile?->years_of_experience) $parts[] = $profile->years_of_experience . ' yrs';
+                    return [
+                        'value' => $user->id,
+                        'label' => $user->first_name . ' ' . $user->last_name,
+                        'description' => $parts ? implode(' · ', $parts) : 'General Dentistry',
+                    ];
+                })->toArray();
         }
 
         #[On('date-selected')]
@@ -64,6 +77,25 @@ new
             $this->validate();
             if (!$this->edit) {
                 $appointment = $this->form->save();
+                if ($this->selectedServiceId) {
+                    $serviceId = $this->selectedServiceId;
+                    $serviceData = [];
+                    tenancy()->central(function () use ($serviceId, &$serviceData) {
+                        $service = DentalService::find($serviceId);
+                        if ($service) {
+                            $serviceData = [
+                                'name' => $service->name,
+                                'description' => $service->description,
+                                'category' => $service->category,
+                                'base_cost' => $service->default_cost,
+                            ];
+                        }
+                    });
+                    if ($serviceData) {
+                        $serviceData['appointment_id'] = $appointment->id;
+                        Treatment::create($serviceData);
+                    }
+                }
                 $this->toast()->success('Appointment created')->send();
             } else {
                 $this->edit = false;
@@ -72,6 +104,41 @@ new
             }
             $this->modal = false;
             $this->dispatch('success');
+        }
+
+        public function getServiceOptionsProperty()
+        {
+            $services = [];
+            tenancy()->central(function () use (&$services) {
+                $services = DentalService::all()->map(fn($s) => [
+                    'label' => $s->name . ' — ₦' . number_format($s->default_cost, 2),
+                    'value' => (string) $s->id,
+                ])->toArray();
+            });
+            return $services;
+        }
+
+        public function updatedSelectedServiceId($value)
+        {
+            if (! $value) return;
+            tenancy()->central(function () use ($value) {
+                $service = DentalService::find($value);
+                if ($service) {
+                    $this->form->title = $service->name;
+                }
+            });
+        }
+
+        public function getDocumentOptionsProperty()
+        {
+            return Document::where('patient_id', auth()->id())
+                ->latest()
+                ->get()
+                ->map(fn($d) => [
+                    'label' => $d->title . ' (' . $d->document_type . ')',
+                    'value' => (string) $d->id,
+                ])
+                ->toArray();
         }
     };
 ?>
@@ -96,9 +163,15 @@ new
                 </div>
             </div>
             <div class="mb-6">
+                <x-select.styled label="Service (optional)" :options="$this->serviceOptions" wire:model="selectedServiceId" />
+            </div>
+            <div class="mb-6">
                 <x-textarea label="Notes" placeholder="Add notes"  wire:model="form.notes" />
             </div>
-            <x-button type="submit" text="Book" />
+            <div class="mb-6">
+                <x-select.styled label="Attach documents (optional)" :options="$this->documentOptions" wire:model="form.selectedDocuments" multiple searchable />
+            </div>
+            <x-button type="submit" text="Book" loading />
         </form>
     </x-modal>
     <div class="mb-6">

@@ -19,9 +19,9 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
  */
 
 Route::middleware([
-    'web',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
+    'web',
 ])->group(function () {
     Route::get('/', function () {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
@@ -29,7 +29,6 @@ Route::middleware([
 
     require_once __DIR__ . '/auth.php';
         
-
     require_once __DIR__ . '/clinician.php';
 
     require_once __DIR__ . '/patient.php';

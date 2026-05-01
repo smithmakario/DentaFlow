@@ -47,7 +47,7 @@ new class extends Component {
                         <x-checkbox label="Rember me" wire:model="remember" />
                         <x-link href="{{ route('forgot-password') }}" text="Forgot Password"   />
                     </div>
-                    <x-button submit text="Sign In" class="w-full"/>
+                    <x-button submit text="Sign In" class="w-full" loading />
                 </form>
             </x-card>
         </div>

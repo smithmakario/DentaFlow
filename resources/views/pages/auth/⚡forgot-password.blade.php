@@ -17,7 +17,7 @@ new class extends Component {
                         <div class="mb-6">
                             <x-input label="Email *" placeholder="Enter email" />
                         </div>
-                        <x-button submit text="Send reset link" class="w-full" />
+                        <x-button submit text="Send reset link" class="w-full" loading />
                     </form>
                 </x-card>
             </div>

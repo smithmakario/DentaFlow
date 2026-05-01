@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         $middleware->alias([
             'user_type' => \App\Http\Middleware\CheckUserType::class,
+            'admin.auth' => \App\Http\Middleware\AdminAuthentication::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -325,7 +325,7 @@ new
 
                 <x-date label="Payment Date *" wire:model="paidAt" />
 
-                <x-button type="submit" text="Record Payment" />
+                <x-button type="submit" text="Record Payment" loading />
             </form>
         @endif
     </x-modal>

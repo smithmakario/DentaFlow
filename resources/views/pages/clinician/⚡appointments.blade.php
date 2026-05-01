@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\AppointmentQueue;
+use App\Models\DentalService;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Treatment;
@@ -36,6 +37,8 @@ new
         public $treatmentCost = '';
 
         public $treatmentCategory = '';
+
+        public $treatmentServiceId = '';
 
         public function with(): array
         {
@@ -168,6 +171,7 @@ new
             $this->treatmentDescription = '';
             $this->treatmentCost = '';
             $this->treatmentCategory = '';
+            $this->treatmentServiceId = '';
         }
 
         public function closeTreatmentsModal()
@@ -185,18 +189,55 @@ new
                 'treatmentCategory' => 'required',
             ]);
 
-            Treatment::create([
-                'appointment_id' => $this->selectedQueueItemForTreatments->appointment_id,
-                'name' => $this->treatmentName,
-                'tooth_code' => $this->treatmentToothCode,
-                'description' => $this->treatmentDescription,
-                'base_cost' => $this->treatmentCost,
-                'category' => $this->treatmentCategory,
-            ]);
+            $existing = Treatment::where('appointment_id', $this->selectedQueueItemForTreatments->appointment_id)->first();
+
+            if ($existing) {
+                $existing->update([
+                    'name' => $this->treatmentName,
+                    'tooth_code' => $this->treatmentToothCode,
+                    'description' => $this->treatmentDescription,
+                    'base_cost' => $this->treatmentCost,
+                    'category' => $this->treatmentCategory,
+                ]);
+            } else {
+                Treatment::create([
+                    'appointment_id' => $this->selectedQueueItemForTreatments->appointment_id,
+                    'name' => $this->treatmentName,
+                    'tooth_code' => $this->treatmentToothCode,
+                    'description' => $this->treatmentDescription,
+                    'base_cost' => $this->treatmentCost,
+                    'category' => $this->treatmentCategory,
+                ]);
+            }
 
             $this->resetTreatmentForm();
             $this->selectedQueueItemForTreatments->load('appointment.treatments');
-            $this->toast()->success('Treatment added')->send();
+            $this->toast()->success($existing ? 'Treatment updated' : 'Treatment added')->send();
+        }
+
+        public function getServiceOptionsProperty()
+        {
+            $services = [];
+            tenancy()->central(function () use (&$services) {
+                $services = DentalService::all()->map(fn($s) => [
+                    'label' => $s->name . ' — ₦' . number_format($s->default_cost, 2),
+                    'value' => (string) $s->id,
+                ])->toArray();
+            });
+            return $services;
+        }
+
+        public function updatedTreatmentServiceId($value)
+        {
+            if (! $value) return;
+            tenancy()->central(function () use ($value) {
+                $service = DentalService::find($value);
+                if ($service) {
+                    $this->treatmentName = $service->name;
+                    $this->treatmentCategory = $service->category;
+                    $this->treatmentCost = (string) $service->default_cost;
+                }
+            });
         }
 
         public function editTreatment($treatmentId)
@@ -369,7 +410,7 @@ new
 
             <p class="text-xs text-gray-400">To edit appointment details (title, date, notes), use the Schedule view.</p>
 
-            <x-button type="submit" text="Update" />
+            <x-button type="submit" text="Update" loading />
         </form>
     </x-modal>
 
@@ -416,6 +457,7 @@ new
 
             <p class="text-sm font-semibold mb-3">{{ $editingTreatmentId ? 'Edit Treatment' : 'Add Treatment' }}</p>
             <div class="space-y-3">
+                <x-select.styled label="Service (optional)" :options="$this->serviceOptions" wire:model="treatmentServiceId" />
                 <div class="flex gap-2">
                     <div class="flex-1">
                         <x-input label="Procedure name *" placeholder="e.g. Composite filling" wire:model="treatmentName" />

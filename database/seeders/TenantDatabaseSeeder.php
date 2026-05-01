@@ -14,12 +14,6 @@ class TenantDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'username' => 'tenant.admin',
-            'email' => 'admin@tenant.example.com',
-            'password' => Hash::make('admin123'),
-            'user_type' => 'admin',
-        ]);
 
         User::factory()->create([
             'username' => 'clinician',

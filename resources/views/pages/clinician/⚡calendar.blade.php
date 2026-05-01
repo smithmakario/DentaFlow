@@ -27,12 +27,20 @@ new
         #[Computed]
         public function clinicians()
         {
-            return User::where('user_type', 'clinician')->get()->map(function ($user) {
-                return [
-                    'value' => $user->id,
-                    'label' => $user->username,
-                ];
-            })->toArray();
+            return User::where('user_type', 'clinician')
+                ->with('userProfile')
+                ->get()
+                ->map(function ($user) {
+                    $profile = $user->userProfile;
+                    $parts = [];
+                    if ($profile?->specialization) $parts[] = $profile->specialization;
+                    if ($profile?->years_of_experience) $parts[] = $profile->years_of_experience . ' yrs';
+                    return [
+                        'value' => $user->id,
+                        'label' => $user->first_name . ' ' . $user->last_name,
+                        'description' => $parts ? implode(' · ', $parts) : 'General Dentistry',
+                    ];
+                })->toArray();
         }
 
         #[On('date-selected')]
@@ -133,7 +141,7 @@ new
 
             <x-textarea label="Notes" placeholder="Add notes" wire:model="form.notes" />
 
-            <x-button type="submit" :text="$edit ? 'Update' : 'Book'" />
+            <x-button type="submit" :text="$edit ? 'Update' : 'Book'" loading />
         </form>
     </x-modal>
 

@@ -27,6 +27,8 @@ class AppointmentForm extends Form
 
     public $notes;
 
+    public array $selectedDocuments = [];
+
     public function setAppointment(Appointment $app)
     {
         $this->appointment = $app;
@@ -44,6 +46,8 @@ class AppointmentForm extends Form
         $this->status = $app->status;
 
         $this->notes = $app->notes;
+
+        $this->selectedDocuments = $app->documents()->pluck('documents.id')->map(fn($id) => (string) $id)->toArray();
     }
 
     public function update()
@@ -55,6 +59,7 @@ class AppointmentForm extends Form
             'notes' => $this->notes,
             'status' => $this->status,
         ]);
+        $this->appointment->documents()->sync($this->selectedDocuments);
         $this->reset();
         return $this->appointment;
     }
@@ -70,6 +75,7 @@ class AppointmentForm extends Form
             'notes' => $this->notes,
             'status' => 'pending',
         ]);
+        $appointment->documents()->sync($this->selectedDocuments);
         $this->reset();
         return $appointment;
     }

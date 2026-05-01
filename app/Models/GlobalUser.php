@@ -17,6 +17,7 @@ class GlobalUser extends Model
         'username',
         'email',
         'phone_number',
+        'address',
         'user_type',
     ];
 

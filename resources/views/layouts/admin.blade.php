@@ -43,6 +43,7 @@
                     </x-slot:brand>
                     <x-side-bar.item text="Home" icon="home" :route="route('admin.dashboard')" />
                     <x-side-bar.item text="Branches" icon="clock" :route="route('admin.branches')" />
+                    <x-side-bar.item text="Services" icon="clipboard-document-list" :route="route('admin.services')" />
                     <x-side-bar.item text="Users" icon="users" :route="route('admin.users')" />
                 </x-side-bar>
             </x-slot:menu>

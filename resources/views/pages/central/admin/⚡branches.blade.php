@@ -18,6 +18,8 @@ new #[Layout('layouts::admin')] class extends Component
     #[Validate('required|unique:tenants,id')]
     public $tenant;
 
+    public $modal = false;
+
     public function with(): array
     {
         $tenants = Tenant::with('domains')->latest()->get();
@@ -63,12 +65,7 @@ new #[Layout('layouts::admin')] class extends Component
         } else {
             $tenant->domains()->create(['domain' => "{$this->tenant}.". request()->getHost()]);
         }
-        $user = auth()->user();
-        $tenant->run(function() use($user) {
-            $data = $user->toArray();
-            $data['password'] = $user->password;
-            User::create($data);
-        });
+        $this->modal =  false;
         $this->toast()->success('Branch created')->send();
     }
 };
@@ -86,7 +83,7 @@ new #[Layout('layouts::admin')] class extends Component
         <x-stats :title="'Newest Branch'" :number="$newestBranch ? $newestBranch->id : 0" icon="clock" color="green" />
     </div>
 
-    <x-modal title="Add Branch" id="modal-branch" x-on:close-modal.window="$tsui.close.modal('modal-branch')">
+    <x-modal title="Add Branch" id="modal-branch" wire="modal">
         <form wire:submit="save" class="space-y-4">
             <p class="text-sm text-gray-500">A new database will be created for this branch with its own isolated data.</p>
             <x-input label="Branch name *" placeholder="e.g. downtown, uptown" wire:model="tenant">
@@ -106,7 +103,7 @@ new #[Layout('layouts::admin')] class extends Component
     <x-card>
         <x-slot:header>
             <span>All Branches</span>
-            <x-button text="Add Branch" icon="plus" x-on:click="$tsui.open.modal('modal-branch')" />
+            <x-button text="Add Branch" icon="plus" wire:click="$toggle('modal')" />
         </x-slot:header>
         <x-table :$headers :$rows>
             @interact('column_id', $row)
@@ -143,7 +140,21 @@ new #[Layout('layouts::admin')] class extends Component
             @endinteract
 
             @interact('column_action', $row)
-            <x-button text="View" color="blue" wire:click="login('{{ $row->id }}')" sm />
+            @php
+                $domain = $row->domains->first();
+                $url  = $domain->domain;
+                if (request()->secure()) {
+                    $url = 'https://' . $url;
+                } else {
+                    $url = 'http://' . $url;
+                }
+                if (app()->environment('local')) {
+                    $url = $url . ':' . request()->getPort();
+                }             
+            @endphp
+            <a target="_blank" href="{{ $url }}/login">
+                <x-button text="Enter" color="green"  sm />
+            </a>
             @endinteract
         </x-table>
     </x-card>

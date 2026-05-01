@@ -27,6 +27,8 @@ new #[Layout('layouts::patient')] class extends Component
 
     public $address;
 
+    public $gender;
+
     public $blood_type;
 
     public function mount()
@@ -41,6 +43,10 @@ new #[Layout('layouts::patient')] class extends Component
             'first_name' => $this->first_name,
             'last_name' => $this->last_name
         ]);
+        auth()->user()->userProfile()->updateOrCreate(
+            ['user_id' => auth()->id()],
+            ['address' => $this->address]
+        );
         $this->toast()->success('Profile saved')->send();
     }
 };
@@ -59,24 +65,24 @@ new #[Layout('layouts::patient')] class extends Component
             </div>
             <div class="flex gap-3 mb-6">
                 <div class="basis-1/2">
-                    <x-date label="Date of birth" placeholder="Enter birthday" />
+                    <x-date label="Date of birth" placeholder="Enter birthday" wire:model="dob" />
                 </div>
                 <div class="basis-1/2">
-                    <x-select.styled label="Gender" :options="['Male', 'Female']" />
+                    <x-select.styled label="Gender" :options="['Male', 'Female']" wire:model="gender" />
                 </div>
             </div>
             <div class="flex gap-3 mb-6">
                 <div class="basis-1/2">
-                    <x-input label="Blood type" placeholder="Enter blood type" />
+                    <x-input label="Blood type" placeholder="Enter blood type" wire:model="blood_type" />
                 </div>
                 <div class="basis-1/2">
-                    <x-input label="Address" placeholder="Enter address" />
+                    <x-input label="Address" placeholder="Enter address" wire:model="address" />
                 </div>
             </div>
             <div class="mb-6">
                 <x-upload wire:model="avatar" placeholder="Profile picture" />
             </div>
-            <x-button type="submit" text="Save" />
+            <x-button type="submit" text="Save" loading />
         </form>
     </x-card>
 </div>

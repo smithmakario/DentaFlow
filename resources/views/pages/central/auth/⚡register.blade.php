@@ -88,7 +88,7 @@ new class extends Component {
                             <x-password label="Confirm Password *"  placeholder="Enter password"  wire:model="form.confirm_password"/>
                         </div>
                     </div>
-                    <x-button submit text="Sign Up" class="w-full"/>
+                    <x-button submit text="Sign Up" class="w-full" loading />
                 </form>
                 <p class="mt-6 text-center">Already have an account? <x-link href="{{ route('login') }}" text="Sign in" /></p>
             </x-card>

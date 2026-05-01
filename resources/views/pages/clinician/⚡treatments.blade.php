@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Appointment;
+use App\Models\DentalService;
 use App\Models\Treatment;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -28,6 +29,8 @@ new
         public $treatmentCost = '';
 
         public $treatmentCategory = '';
+
+        public $treatmentServiceId = '';
 
         public function with(): array
         {
@@ -63,6 +66,31 @@ new
                 ->toArray();
         }
 
+        public function getServiceOptionsProperty()
+        {
+            $services = [];
+            tenancy()->central(function () use (&$services) {
+                $services = DentalService::all()->map(fn($s) => [
+                    'label' => $s->name . ' — ₦' . number_format($s->default_cost, 2),
+                    'value' => (string) $s->id,
+                ])->toArray();
+            });
+            return $services;
+        }
+
+        public function updatedTreatmentServiceId($value)
+        {
+            if (! $value) return;
+            tenancy()->central(function () use ($value) {
+                $service = DentalService::find($value);
+                if ($service) {
+                    $this->treatmentName = $service->name;
+                    $this->treatmentCategory = $service->category;
+                    $this->treatmentCost = (string) $service->default_cost;
+                }
+            });
+        }
+
         #[Computed]
         public function categoryOptions()
         {
@@ -95,6 +123,7 @@ new
             $this->treatmentDescription = '';
             $this->treatmentCost = '';
             $this->treatmentCategory = '';
+            $this->treatmentServiceId = '';
         }
 
         public function save()
@@ -214,6 +243,8 @@ new
         <form wire:submit="save" class="space-y-4">
             <x-select.styled label="Appointment *" :options="$this->appointmentOptions" wire:model="treatmentAppointmentId" />
 
+            <x-select.styled label="Service (optional)" :options="$this->serviceOptions" wire:model="treatmentServiceId" />
+
             <x-input label="Procedure name *" placeholder="e.g. Composite filling" wire:model="treatmentName" />
 
             <div class="flex gap-2">
@@ -229,7 +260,7 @@ new
 
             <x-input label="Cost *" placeholder="0.00" wire:model="treatmentCost" prefix="₦" />
 
-            <x-button type="submit" :text="$editingTreatmentId ? 'Update' : 'Add'" />
+            <x-button type="submit" :text="$editingTreatmentId ? 'Update' : 'Add'" loading />
         </form>
     </x-modal>
 </div>

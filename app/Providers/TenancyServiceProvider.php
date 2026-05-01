@@ -7,6 +7,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Features\SupportFileUploads\FilePreviewController;
 use Livewire\Livewire;
 use Stancl\JobPipeline\JobPipeline;
 use Stancl\Tenancy\Events;
@@ -111,6 +112,7 @@ class TenancyServiceProvider extends ServiceProvider
                         InitializeTenancyByDomain::class,  // or whatever tenancy middleware you use
                     );
             });
+            FilePreviewController::$middleware = ['web', InitializeTenancyByDomain::class];
         }
 
         $this->bootEvents();

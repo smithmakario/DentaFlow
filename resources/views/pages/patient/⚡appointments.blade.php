@@ -30,21 +30,30 @@ new
                     ['index' => 'clinician_id', 'label' => 'Clinician name'],
                     ['index' => 'title', 'label' => 'Title'], 
                     ['index' => 'scheduled_at', 'label' => 'Scheduled at'],
+                    ['index' => 'documents', 'label' => 'Documents'],
                     ['index' => 'status', 'label' => 'Status'],
                 ],
-                'rows' => Appointment::with('clinician')->get()
+                'rows' => Appointment::with('clinician', 'documents')->get()
             ];
         }
 
         #[Computed]
         public function clinicians()
         {
-            return User::where('user_type', 'clinician')->get()->map(function ($user) {
-                return [
-                    'value' => $user->id,
-                    'label' => $user->username,
-                ];
-            })->toArray();
+            return User::where('user_type', 'clinician')
+                ->with('userProfile')
+                ->get()
+                ->map(function ($user) {
+                    $profile = $user->userProfile;
+                    $parts = [];
+                    if ($profile?->specialization) $parts[] = $profile->specialization;
+                    if ($profile?->years_of_experience) $parts[] = $profile->years_of_experience . ' yrs';
+                    return [
+                        'value' => $user->id,
+                        'label' => $user->first_name . ' ' . $user->last_name,
+                        'description' => $parts ? implode(' · ', $parts) : 'General Dentistry',
+                    ];
+                })->toArray();
         }
 
 
@@ -74,7 +83,7 @@ new
             <div class="mb-6">
                 <x-textarea label="Notes" placeholder="Add notes"  wire:model="notes" />
             </div>
-            <x-button type="submit" text="Book now!" />
+            <x-button type="submit" text="Book now!" loading />
         </form>
     </x-modal>
     <x-card>
@@ -99,6 +108,17 @@ new
 
             @interact('column_scheduled_at', $row)
             <span>{{ \Illuminate\Support\Carbon::createFromFormat('Y-m-d H:i:s', $row->scheduled_at)->format('F d, Y H:i a') }}</span>
+            @endinteract
+
+            @interact('column_documents', $row)
+            @if($row->documents->count() > 0)
+                <div class="flex items-center gap-1">
+                    <x-icon name="paper-clip" class="h-4 w-4" />
+                    <span class="text-sm">{{ $row->documents->count() }} file(s)</span>
+                </div>
+            @else
+                <span class="text-sm text-gray-400">—</span>
+            @endif
             @endinteract
 
             @interact('column_status', $row)
