@@ -3,8 +3,6 @@
 
 use App\Models\GlobalUser;
 use App\Models\Tenant;
-use App\Models\User;
-use App\Services\TokenGeneratorService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -37,23 +35,6 @@ new #[Layout('layouts::admin')] class extends Component
             'totalDomains' => Domain::count(),
             'newestBranch' => $tenants->first(),
         ];
-    }
-
-    public function login(TokenGeneratorService $tokenGenerator, $tenant)
-    {
-        $user = auth()->user();
-        $token = $tokenGenerator->signed([
-            'user_id' => $user->id,
-            'username' => $user->username,
-            'user_type' => 'clinician',
-        ]);
-        $tenant = Tenant::find($tenant);
-        $domain = $tenant->domains()->first();
-        $url = request()->getScheme() . "://{$domain->domain}";
-        if (app()->environment('local')) {
-            $url .= ':' . request()->getPort();
-        }
-        $this->dispatch('open-url', url: $url . "/{$token}/login");
     }
 
     public function save()
