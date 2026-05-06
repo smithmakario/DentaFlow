@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ClinicController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Clinic\DashboardController as ClinicDashboardController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Clinic\PatientsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
@@ -22,10 +23,11 @@ foreach (config('tenancy.central_domains') as $domain) {
         Route::post('logout', LogoutController::class)->name('central.logout');
 
         Route::get('admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard.index');
-        Route::get('/admin/clinic', [ClinicController::class, 'index'])->name('admin.clinic.index');
-        Route::get('/admin/clinic/add', [ClinicController::class, 'add'])->name('admin.clinic.add');
+        Route::get('admin/clinic', [ClinicController::class, 'index'])->name('admin.clinic.index');
+        Route::get('admin/clinic/add', [ClinicController::class, 'add'])->name('admin.clinic.add');
 
         Route::get('clinic', [ClinicDashboardController::class, 'index'])->name('clinic.dashboard.index');
+        Route::get('clinic/patients/view', [PatientsController::class, 'view'])->name('clinic.patients.view');
 
         // Route::livewire('admin', 'pages::central.admin.dashboard')->middleware('admin.auth')->name('admin.dashboard');
         Route::livewire('admin/branches', 'pages::central.admin.branches')->middleware('admin.auth')->name('admin.branches');
