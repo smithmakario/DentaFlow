@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Clinic\PatientsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Patient\AppointmentController;
 use Illuminate\Support\Facades\Route;
 
 foreach (config('tenancy.central_domains') as $domain) {
@@ -28,6 +29,11 @@ foreach (config('tenancy.central_domains') as $domain) {
 
         Route::get('clinic', [ClinicDashboardController::class, 'index'])->name('clinic.dashboard.index');
         Route::get('clinic/patients/view', [PatientsController::class, 'view'])->name('clinic.patients.view');
+
+        Route::get('patients/appointments/create', [AppointmentController::class, 'create'])->name('patients.appointments.create');
+        Route::get('patients/appointments/create/provider', [AppointmentController::class, 'provider'])->name('patients.appointments.provider');
+        Route::get('patients/appointments/create/time', [AppointmentController::class, 'time'])->name('patients.appointments.time');
+        Route::get('patients/appointments/create/review', [AppointmentController::class, 'review'])->name('patients.appointments.review');
 
         // Route::livewire('admin', 'pages::central.admin.dashboard')->middleware('admin.auth')->name('admin.dashboard');
         Route::livewire('admin/branches', 'pages::central.admin.branches')->middleware('admin.auth')->name('admin.branches');
