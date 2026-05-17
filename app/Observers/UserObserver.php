@@ -28,7 +28,7 @@ class UserObserver
                 'email' => $user->email,
                 'phone_number' => $user->phone_number,
                 'address' => $address,
-                'user_type' => $user->user_type,
+                'role' => $user->role,
             ]
         );
     }
@@ -52,7 +52,7 @@ class UserObserver
             return;
         }
 
-        if (! $user->wasChanged(['first_name', 'last_name', 'username', 'email', 'phone_number', 'user_type'])) {
+        if (! $user->wasChanged(['first_name', 'last_name', 'username', 'email', 'phone_number', 'role'])) {
             return;
         }
 

@@ -17,12 +17,14 @@ new
 
         public function with(): array
         {
+            $roles = ['doctor', 'receptionist', 'nurse', 'patient', 'accountant', 'lab_tech', 'clinic_admin'];
+
             return [
                 'headers' => [
                     ['index' => 'first_name', 'label' => 'First name'],
                     ['index' => 'last_name', 'label' => 'Last name'],
                     ['index' => 'email', 'label' => 'Email'],
-                    ['index' => 'user_type', 'label' => 'Type'],
+                    ['index' => 'role', 'label' => 'Role'],
                     ['index' => 'tenant_id', 'label' => 'Branch'],
                 ],
                 'rows' => GlobalUser::with('tenant')
@@ -32,11 +34,15 @@ new
                             ->orWhere('email', 'like', "%{$this->search}%")
                             ->orWhere('username', 'like', "%{$this->search}%");
                     }))
-                    ->when($this->filterType, fn($q) => $q->where('user_type', $this->filterType))
+                    ->when($this->filterType, fn($q) => $q->where('role', $this->filterType))
                     ->latest()
                     ->paginate(15),
-                'totalClinicians' => GlobalUser::where('user_type', 'clinician')->count(),
-                'totalPatients' => GlobalUser::where('user_type', 'patient')->count(),
+                'totalDoctors' => GlobalUser::where('role', 'doctor')->count(),
+                'totalPatients' => GlobalUser::where('role', 'patient')->count(),
+                'roleOptions' => collect($roles)->map(fn($r) => [
+                    'label' => ucfirst(str_replace('_', ' ', $r)),
+                    'value' => $r,
+                ])->prepend(['label' => 'All', 'value' => ''])->toArray(),
             ];
         }
 
@@ -55,12 +61,12 @@ new
 <div class="space-y-6">
     <div>
         <p class="text-xl">Global Users Directory</p>
-        <p class="text-sm text-gray-500">Browse all clinicians and patients across all branches</p>
+        <p class="text-sm text-gray-500">Browse all users across all branches</p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <x-stats title="Total Users" :number="$rows->total()" icon="users" />
-        <x-stats title="Clinicians" :number="$totalClinicians" icon="user" color="blue" />
+        <x-stats title="Doctors" :number="$totalDoctors" icon="user" color="blue" />
         <x-stats title="Patients" :number="$totalPatients" icon="user" color="green" />
     </div>
 
@@ -71,17 +77,25 @@ new
             </div>
             <div class="flex items-center gap-2">
                 <x-input wire:model.live="search" placeholder="Search by name, email, or username" />
-                <x-select.styled wire:model.live="filterType" :options="[
-                    ['label' => 'All', 'value' => ''],
-                    ['label' => 'Clinicians', 'value' => 'clinician'],
-                    ['label' => 'Patients', 'value' => 'patient'],
-                ]" />
+                <x-select.styled wire:model.live="filterType" :options="$roleOptions" />
             </div>
         </x-slot:header>
 
         <x-table :$headers :$rows paginate loading>
-            @interact('column_user_type', $row)
-            <x-badge :text="ucfirst($row->user_type)" :color="$row->user_type === 'clinician' ? 'blue' : 'green'" light />
+            @interact('column_role', $row)
+            @php
+                $color = match($row->role) {
+                    'doctor' => 'blue',
+                    'patient' => 'green',
+                    'clinic_admin' => 'red',
+                    'receptionist' => 'purple',
+                    'nurse' => 'pink',
+                    'accountant' => 'yellow',
+                    'lab_tech' => 'orange',
+                    default => 'zinc'
+                };
+            @endphp
+            <x-badge :text="ucfirst(str_replace('_', ' ', $row->role))" :color="$color" light />
             @endinteract
 
             @interact('column_tenant_id', $row)

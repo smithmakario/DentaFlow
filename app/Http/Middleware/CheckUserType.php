@@ -8,14 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckUserType
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
     public function handle(Request $request, Closure $next, string ...$types): Response
     {
-        if (!auth()->check() || !in_array(auth()->user()->user_type, $types)) {
+        if (!auth()->check() || !in_array(auth()->user()->role, $types)) {
             abort(403, 'Unauthorized');
         }
 

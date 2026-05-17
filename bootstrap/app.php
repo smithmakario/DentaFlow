@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         //
         $middleware->alias([
-            'user_type' => \App\Http\Middleware\CheckUserType::class,
+            'role' => \App\Http\Middleware\CheckUserType::class,
             'admin.auth' => \App\Http\Middleware\AdminAuthentication::class,
         ]);
     })

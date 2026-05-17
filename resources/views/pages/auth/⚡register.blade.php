@@ -16,11 +16,16 @@ new class extends Component
 
         Auth::login($user);
 
-        return redirect()->intended(match($user->user_type) {
-            'patient' => route('patient.dashboard'),
-            'clinician' => route('clinician.dashboard'),
-            default => ''
-        });
+        $role = $user->role;
+        $redirects = [
+            'doctor' => route('clinician.dashboard'),
+            'receptionist' => route('clinician.dashboard'),
+            'nurse' => route('clinician.dashboard'),
+            'accountant' => route('clinician.dashboard'),
+            'lab_tech' => route('clinician.dashboard'),
+            'clinic_admin' => route('clinician.dashboard'),
+        ];
+        return redirect()->intended($redirects[$role] ?? route('patient.dashboard'));
     }
 };
 ?>
@@ -33,10 +38,10 @@ new class extends Component
                 <form wire:submit="save">
                     <div class="flex gap-3 mb-6 justify-center">
                         <label for="patient" class="p-3 border-1 round-6 border-primary-400 w-full rounded-md shadow">
-                            <x-radio label="Patient" id="patient" value="patient" name="user_type" wire:model="form.user_type" />
+                            <x-radio label="Patient" id="patient" value="patient" name="role" wire:model="form.role" />
                         </label>
-                        <label for="clinician" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
-                            <x-radio label="Clinician" id="clinician" value="clinician" name="user_type" wire:model="form.user_type" color="green"/>
+                        <label for="staff" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
+                            <x-radio label="Staff" id="staff" value="doctor" name="role" wire:model="form.role" color="green"/>
                         </label>
                     </div>
                     <div class="flex mb-6 gap-3">

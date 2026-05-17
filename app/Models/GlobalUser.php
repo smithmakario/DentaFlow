@@ -18,7 +18,7 @@ class GlobalUser extends Model
         'email',
         'phone_number',
         'address',
-        'user_type',
+        'role',
     ];
 
     public function tenant(): BelongsTo

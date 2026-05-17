@@ -14,7 +14,7 @@ class AdminAuthentication
             return redirect()->route('admin.login');
         }
 
-        if (auth()->user()->user_type !== 'admin') {
+        if (!in_array(auth()->user()->role, ['super_admin', 'clinic_admin'])) {
             abort(403, 'Unauthorized');
         }
 

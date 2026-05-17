@@ -107,12 +107,17 @@ new #[Layout('layouts::admin')] class extends Component
 
             @interact('column_users_count', $row)
             @php
-                $clinicians = GlobalUser::where('tenant_id', $row->id)->where('user_type', 'clinician')->count();
-                $patients = GlobalUser::where('tenant_id', $row->id)->where('user_type', 'patient')->count();
+                $users = GlobalUser::where('tenant_id', $row->id)->get();
+                $doctorCount = $users->where('role', 'doctor')->count();
+                $patientCount = $users->where('role', 'patient')->count();
+                $otherCount = $users->count() - $doctorCount - $patientCount;
             @endphp
-            <div class="flex items-center gap-1">
-                <x-badge :text="$clinicians . ' clinician'" :color="$clinicians > 0 ? 'blue' : 'zinc'" light xs />
-                <x-badge :text="$patients . ' patient'" :color="$patients > 0 ? 'green' : 'zinc'" light xs />
+            <div class="flex items-center gap-1 flex-wrap">
+                <x-badge :text="$doctorCount . ' doctor'" :color="$doctorCount > 0 ? 'blue' : 'zinc'" light xs />
+                <x-badge :text="$patientCount . ' patient'" :color="$patientCount > 0 ? 'green' : 'zinc'" light xs />
+                @if($otherCount > 0)
+                <x-badge :text="$otherCount . ' staff'" color="purple" light xs />
+                @endif
             </div>
             @endinteract
 

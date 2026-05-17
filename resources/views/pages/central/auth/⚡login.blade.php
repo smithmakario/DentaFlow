@@ -17,7 +17,7 @@ new class extends Component {
     #[Validate('required')]
     public $password;
 
-    public $user_type = 'patient';
+    public $role = 'patient';
 
     public $remember = true;
 
@@ -56,7 +56,7 @@ new class extends Component {
 
         $token = $tokenGenerator->signed([
             'user_id' => $user->id, 
-            'user_type' => $this->user_type
+            'role' => $this->role
         ]);
         $domain = $tenant->domains()->first();
         $url = request()->getScheme() . "://{$domain->domain}";
@@ -77,10 +77,10 @@ new class extends Component {
                     @csrf
                     <div class="flex gap-3 mb-6 justify-center">
                         <label for="patient" class="p-3 border-1 round-6 border-primary-400 w-full rounded-md shadow">
-                            <x-radio label="Patient" id="patient" value="patient" name="user_type" wire:model="user_type" />
+                            <x-radio label="Patient" id="patient" value="patient" name="role" wire:model="role" />
                         </label>
-                        <label for="clinician" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
-                            <x-radio label="Clinician" id="clinician" value="clinician" name="user_type" wire:model="user_type" color="green"/>
+                        <label for="staff" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
+                            <x-radio label="Staff" id="staff" value="doctor" name="role" wire:model="role" color="green"/>
                         </label>
                     </div>
                     <div class="mb-6">

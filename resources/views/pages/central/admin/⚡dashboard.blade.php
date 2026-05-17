@@ -14,15 +14,15 @@ new #[Layout('layouts::admin')] class extends Component {
     }
 
     #[Computed]
-    public function totalClinicians()
+    public function totalDoctors()
     {
-        return GlobalUser::where('user_type', 'clinician')->count();
+        return GlobalUser::where('role', 'doctor')->count();
     }
 
     #[Computed]
     public function totalPatients()
     {
-        return GlobalUser::where('user_type', 'patient')->count();
+        return GlobalUser::where('role', 'patient')->count();
     }
 
     public function with(): array
@@ -35,7 +35,7 @@ new #[Layout('layouts::admin')] class extends Component {
                 ['index' => 'tenant_id', 'label' => 'Branch name'],
             ],
             'rows' => GlobalUser::with('tenant')
-                ->where('user_type', 'patient')
+                ->where('role', 'patient')
                 ->latest()
                 ->limit(10)
                 ->get(),
@@ -51,9 +51,9 @@ new #[Layout('layouts::admin')] class extends Component {
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <x-stats :title="'Total Branches'" :number="$this->totalBranches" icon="rectangle-stack" />
-        <x-stats :title="'Total Clinicians'" :number="$this->totalClinicians" icon="user" color="blue" />
+        <x-stats :title="'Total Doctors'" :number="$this->totalDoctors" icon="user" color="blue" />
         <x-stats :title="'Total Patients'" :number="$this->totalPatients" icon="users" color="green" />
-        <x-stats :title="'Total Users'" :number="$this->totalClinicians + $this->totalPatients" icon="user-group" color="yellow" />
+        <x-stats :title="'Total Users'" :number="$this->totalDoctors + $this->totalPatients" icon="user-group" color="yellow" />
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">

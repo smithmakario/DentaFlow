@@ -3,7 +3,7 @@
 use App\Http\Controllers\AppointmentAPIController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('patient')->middleware('auth', 'user_type:patient,admin')->group(function () {
+Route::prefix('patient')->middleware('auth', 'role:patient,super_admin,clinic_admin')->group(function () {
     Route::get('/api/calendar/appointments', [AppointmentAPIController::class, 'patient'])->name('patient.calendar.appointments');
 
     Route::livewire('', 'pages::patient.dashboard')->name('patient.dashboard');

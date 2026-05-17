@@ -30,7 +30,7 @@ class UserForm extends Form
     public $confirm_password = '';
     
     #[Validate('required')]
-    public $user_type = 'patient';
+    public $role = 'patient';
 
     public function save()
     {

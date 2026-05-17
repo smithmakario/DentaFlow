@@ -9,7 +9,7 @@ new class extends Component {
 
     public $password;
 
-    public $user_type = 'patient';
+    public $role = 'patient';
 
     public $remember = true;
 
@@ -23,11 +23,16 @@ new class extends Component {
             ];
         }
         if (auth()->attempt($credentials, $this->remember)) {
-            if (auth()->user()->user_type === 'clinician') {
-                return redirect('/clinician');
-            } else {
-                return redirect('/patient');
-            }
+            $role = auth()->user()->role;
+            $redirects = [
+                'doctor' => '/clinician',
+                'receptionist' => '/clinician',
+                'nurse' => '/clinician',
+                'accountant' => '/clinician',
+                'lab_tech' => '/clinician',
+                'clinic_admin' => '/clinician',
+            ];
+            return redirect($redirects[$role] ?? '/patient');
         }
         throw ValidationException::withMessages(['username' => 'Credentials not found']);
     }
@@ -43,10 +48,10 @@ new class extends Component {
                     @csrf
                     <div class="flex gap-3 mb-6 justify-center">
                         <label for="patient" class="p-3 border-1 round-6 border-primary-400 w-full rounded-md shadow">
-                            <x-radio label="Patient" id="patient" value="patient" name="user_type" wire:model="user_type" />
+                            <x-radio label="Patient" id="patient" value="patient" name="role" wire:model="role" />
                         </label>
-                        <label for="clinician" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
-                            <x-radio label="Clinician" id="clinician" value="clinician" name="user_type" wire:model="user_type" color="green"/>
+                        <label for="staff" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
+                            <x-radio label="Staff" id="staff" value="doctor" name="role" wire:model="role" color="green"/>
                         </label>
                     </div>
                     <div class="mb-6">

@@ -27,7 +27,7 @@ class SyncGlobalUsers extends Command
 
         foreach ($tenants as $tenant) {
             $tenant->run(function () use ($tenant) {
-                User::whereIn('user_type', ['patient', 'clinician'])->chunk(100, function ($users) use ($tenant) {
+                User::whereIn('role', ['doctor', 'clinic_admin', 'receptionist', 'nurse', 'patient', 'accountant', 'lab_tech'])->chunk(100, function ($users) use ($tenant) {
                     tenancy()->central(function () use ($users, $tenant) {
                         foreach ($users as $user) {
                             GlobalUser::updateOrCreate(
@@ -41,7 +41,7 @@ class SyncGlobalUsers extends Command
                                     'username' => $user->username,
                                     'email' => $user->email,
                                     'phone_number' => $user->phone_number,
-                                    'user_type' => $user->user_type,
+                                    'role' => $user->role,
                                 ]
                             );
                         }

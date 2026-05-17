@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'admin',
             'email' => 'admin@example.com',
             'password' => Hash::make('admin123'),
-            'user_type' => 'admin',
+            'role' => 'super_admin',
         ]);
     }
 }

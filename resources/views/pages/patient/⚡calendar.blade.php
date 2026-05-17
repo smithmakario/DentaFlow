@@ -30,7 +30,7 @@ new
         #[Computed]
         public function clinicians()
         {
-            return User::where('user_type', 'clinician')
+            return User::whereIn('role', ['doctor', 'clinic_admin'])
                 ->with('userProfile')
                 ->get()
                 ->map(function ($user) {

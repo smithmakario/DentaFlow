@@ -9,7 +9,7 @@ new class extends Component {
 
     public $password;
 
-    public $user_type = 'admin';
+    public $role = 'super_admin';
 
     public $remember = true;
 

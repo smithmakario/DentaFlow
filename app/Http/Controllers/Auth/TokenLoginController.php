@@ -17,7 +17,7 @@ class TokenLoginController extends Controller
         if ($payload) {
             $user = User::find($payload['user_id']);
             Auth::login($user);
-            return redirect("/{$payload['user_type']}");
+            return redirect("/{$payload['role']}");
         }
 
         return back()->withErrors(['username' => 'Invalid credentials']);

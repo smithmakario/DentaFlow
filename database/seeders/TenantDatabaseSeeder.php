@@ -14,17 +14,22 @@ class TenantDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $roles = [
+            ['username' => 'doctor', 'role' => 'doctor'],
+            ['username' => 'patient', 'role' => 'patient'],
+            ['username' => 'receptionist', 'role' => 'receptionist'],
+            ['username' => 'nurse', 'role' => 'nurse'],
+            ['username' => 'accountant', 'role' => 'accountant'],
+            ['username' => 'lab_tech', 'role' => 'lab_tech'],
+            ['username' => 'clinic_admin', 'role' => 'clinic_admin'],
+        ];
 
-        User::factory()->create([
-            'username' => 'clinician',
-            'password' => Hash::make('password'),
-            'user_type' => 'clinician',
-        ]);
-
-        User::factory()->create([
-            'username' => 'patient',
-            'password' => Hash::make('password'),
-            'user_type' => 'patient',
-        ]);
+        foreach ($roles as $data) {
+            User::factory()->create([
+                'username' => $data['username'],
+                'password' => Hash::make('password'),
+                'role' => $data['role'],
+            ]);
+        }
     }
 }
