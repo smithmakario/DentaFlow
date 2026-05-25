@@ -137,12 +137,13 @@
 <h1 class="font-h1 text-h2 text-on-surface mb-2">Welcome Back</h1>
 <p class="font-body-md text-on-surface-variant">Clinical Practice Management Access</p>
 </div>
-<form class="space-y-6">
+<form class="space-y-6" action="{{ route('auth.login' ) }}" method="POST">
+@csrf
 <div>
-<label class="block font-label-md text-on-surface-variant mb-2" for="email">Email Address</label>
+<label class="block font-label-md text-on-surface-variant mb-2" for="username">Username</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="mail">mail</span>
-<input class="w-full pl-10 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md" id="email" name="email" placeholder="practitioner@dentaflow.com" required="" type="email"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="mail">person</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md" id="username" name="username" placeholder="practitioner" required="" type="text"/>
 </div>
 </div>
 <div>

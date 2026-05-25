@@ -16,4 +16,27 @@ class ClinicController extends Controller
     {
         return view('admin.clinic.add');
     }
+
+    public function stepBranches() 
+    {
+        return view('admin.clinic.step-branches');
+    }
+    
+    public function stepSubscriptions() 
+    {
+        return view('admin.clinic.step-subscriptions');
+    }
+
+    public function stepUser() 
+    {
+        return view('admin.clinic.step-user');
+    }
 }
+
+
+
+
+
+
+
+

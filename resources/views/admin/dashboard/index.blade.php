@@ -133,7 +133,7 @@
 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
 <span class="font-medium">Dashboard</span>
 </a>
-<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white mx-2 hover:bg-slate-800 transition-all duration-200" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white mx-2 hover:bg-slate-800 transition-all duration-200" href="{{ route('admin.clinic.index') }}">
 <span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
 <span class="font-medium">Clinics</span>
 </a>
@@ -155,10 +155,12 @@
 </a>
 </nav>
 <div class="px-4 mt-auto">
-<button class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
+                <form action="{{ route('central.logout') }}" method="post">@csrf
+<button type="submit" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
 <span class="material-symbols-outlined text-sm" data-icon="support_agent">support_agent</span>
-                Support Portal
+                Log Out
             </button>
+                </form>
 </div>
 </aside>
 <!-- Main Content Canvas -->

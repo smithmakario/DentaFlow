@@ -18,14 +18,18 @@ foreach (config('tenancy.central_domains') as $domain) {
         //Route::livewire('login', 'pages::central.auth.login')->name('central.login');
         //Route::livewire('register', 'pages::central.auth.register')->name('central.register');
         Route::get('login', [AuthenticatedSessionController::class, 'login'])->name('central.login');
+        Route::post('auth/login', [AuthenticatedSessionController::class, 'authUser'])->name('auth.login');
 
         Route::livewire('admin/login', 'pages::central.auth.admin')->name('admin.login');
         
         Route::post('logout', LogoutController::class)->name('central.logout');
 
-        Route::get('admin', [AdminDashboardController::class, 'index'])->name('admin.dashboard.index');
+        Route::get('admin', [AdminDashboardController::class, 'index'])->middleware('auth')->name('admin.dashboard.index');
         Route::get('admin/clinic', [ClinicController::class, 'index'])->name('admin.clinic.index');
         Route::get('admin/clinic/add', [ClinicController::class, 'add'])->name('admin.clinic.add');
+        Route::get('admin/clinic/add/branches', [ClinicController::class, 'stepBranches'])->name('admin.clinic.add.branches');
+        Route::get('admin/clinic/add/subscriptions', [ClinicController::class, 'stepSubscriptions'])->name('admin.clinic.add.subscriptions');
+        Route::get('admin/clinic/add/user', [ClinicController::class, 'stepUser'])->name('admin.clinic.add.user');
 
         Route::get('clinic', [ClinicDashboardController::class, 'index'])->name('clinic.dashboard.index');
         Route::get('clinic/patients/view', [PatientsController::class, 'view'])->name('clinic.patients.view');

@@ -154,7 +154,7 @@
 </div>
 </div>
 <nav class="flex-1 space-y-1">
-<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white mx-2 hover:bg-slate-800 transition-all duration-200" href="#">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white mx-2 hover:bg-slate-800 transition-all duration-200" href="{{ route('admin.dashboard.index') }}">
 <span class="material-symbols-outlined">dashboard</span>
 <span class="font-sans text-sm font-medium">Dashboard</span>
 </a>

@@ -174,47 +174,44 @@
 <!-- Progress Line Background -->
 <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-container -translate-y-1/2 z-0"></div>
 <!-- Active Progress Line -->
-<div class="absolute top-1/2 left-0 w-1/4 h-1 bg-primary -translate-y-1/2 z-0 transition-all duration-500"></div>
+<div class="absolute top-1/2 left-0 w-full h-1 bg-primary -translate-y-1/2 z-0 transition-all duration-500"></div>
 <!-- Step 1: Active -->
 <div class="relative z-10 flex flex-col items-center">
 <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-lg">1</div>
-<span class="mt-2 font-label-md text-primary">Clinic Profile</span>
+<span class="mt-2 font-label-md text-on-surface-variant">Clinic Profile</span>
 </div>
 <!-- Step 2: Upcoming -->
 <div class="relative z-10 flex flex-col items-center">
-<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold">2</div>
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-lg">2</div>
 <span class="mt-2 font-label-md text-on-surface-variant">Branches</span>
 </div>
 <!-- Step 3: Upcoming -->
 <div class="relative z-10 flex flex-col items-center">
-<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold">3</div>
-<span class="mt-2 font-label-md text-on-surface-variant">Subscription</span>
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-lg">3</div>
+<span class="mt-2 font-label-md text-on-surface-variant">Subscriptions</span>
 </div>
 <!-- Step 4: Upcoming -->
 <div class="relative z-10 flex flex-col items-center">
-<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold">4</div>
-<span class="mt-2 font-label-md text-on-surface-variant">Primary Admin</span>
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-lg">4</div>
+<span class="mt-2 font-label-md text-primary">Primary Admin</span>
 </div>
 </div>
 </div>
 <!-- Wizard Card: Step 1 Content -->
 <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
 <div class="p-xl border-b border-outline-variant bg-surface-bright">
-<h3 class="font-h3 text-on-surface">Step 1: Clinic Profile</h3>
+<h3 class="font-h3 text-on-surface">Step 5: Primary Admin</h3>
 <p class="text-body-md text-on-surface-variant mt-1">Provide the foundational identity details for the new dental facility.</p>
 </div>
 <div class="p-xl grid grid-cols-12 gap-lg">
 <!-- Left: Form Fields -->
 <div class="col-span-8 space-y-lg">
-<div class="grid grid-cols-2 gap-md">
+<div class="grid grid-cols-1 gap-md">
 <div class="space-y-unit">
-<label class="font-label-md text-on-surface-variant block">Clinic Name *</label>
+<label class="font-label-md text-on-surface-variant block">Username *</label>
 <input class="w-full px-md py-sm rounded-lg border border-outline text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="e.g. BrightSmile Dental Group" type="text"/>
 </div>
-<div class="space-y-unit">
-<label class="font-label-md text-on-surface-variant block">Website</label>
-<input class="w-full px-md py-sm rounded-lg border border-outline text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="https://www.clinicname.com" type="url"/>
-</div>
+
 </div>
 <div class="grid grid-cols-2 gap-md">
 <div class="space-y-unit">
@@ -227,14 +224,8 @@
 </div>
 </div>
 <div class="space-y-unit">
-<label class="font-label-md text-on-surface-variant block">Clinic Specialization</label>
-<select class="w-full px-md py-sm rounded-lg border border-outline text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white transition-all">
-<option>General Dentistry</option>
-<option>Orthodontics</option>
-<option>Pediatric Dentistry</option>
-<option>Periodontics</option>
-<option>Multi-Specialty</option>
-</select>
+<label class="font-label-md text-on-surface-variant block">Password *</label>
+<input class="w-full px-md py-sm rounded-lg border border-outline text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="********" type="password"/>
 </div>
 </div>
 <!-- Right: Logo Upload -->
@@ -264,12 +255,11 @@
 <button class="px-xl py-md font-label-md text-primary bg-transparent border border-primary rounded-lg hover:bg-primary/5 transition-colors disabled:opacity-50" disabled="">
                             Back
                         </button>
-                            <a href="{{ route('admin.clinic.add.branches')}}">
+                            <a href="{{ route('admin.clinic.index') }}">
 <button class="px-xl py-md font-label-md text-on-primary bg-primary rounded-lg hover:bg-primary/90 shadow-md transition-all flex items-center gap-2">
-                            Next: Branches
+                           Save 
                             <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
 </button>
-
                             </a>
 </div>
 </div>
