@@ -31,6 +31,12 @@ class ClinicController extends Controller
     {
         return view('admin.clinic.step-user');
     }
+
+
+    public function saveClinicProfile()
+    {
+        //
+    }
 }
 
 
