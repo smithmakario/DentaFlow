@@ -21,6 +21,11 @@ class Tenant extends BaseTenant implements  TenantWithDatabase
         'data' => 'array',
     ];
 
+    public function clinic_profile(): HasOne
+    {
+        return $this->hasOne(ClinicProfile::class);
+    }
+
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);

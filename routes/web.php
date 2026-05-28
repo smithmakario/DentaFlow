@@ -28,7 +28,7 @@ foreach (config('tenancy.central_domains') as $domain) {
         
         Route::post('logout', LogoutController::class)->name('central.logout');
 
-        Route::get('admin', [AdminDashboardController::class, 'index'])->middleware('auth')->name('admin.dashboard.index');
+        // Route::get('admin', [AdminDashboardController::class, 'index'])->middleware('auth')->name('admin.dashboard.index');
         Route::get('admin/clinic', [ClinicController::class, 'index'])->name('admin.clinic.index');
         Route::get('admin/clinic/add', [ClinicController::class, 'add'])->name('admin.clinic.add');
         Route::get('admin/clinic/add/branches', [ClinicController::class, 'stepBranches'])->name('admin.clinic.add.branches');
@@ -48,7 +48,9 @@ foreach (config('tenancy.central_domains') as $domain) {
         Route::get('patients/appointments/create/time', [AppointmentController::class, 'time'])->name('patients.appointments.time');
         Route::get('patients/appointments/create/review', [AppointmentController::class, 'review'])->name('patients.appointments.review');
 
-        // Route::livewire('admin', 'pages::central.admin.dashboard')->middleware('admin.auth')->name('admin.dashboard');
+        Route::livewire('admin', 'pages::central.admin.dashboard')->middleware('admin.auth')->name('admin.dashboard');
+        Route::livewire('admin/clinics', 'pages::central.admin.clinics')->middleware('admin.auth')->name('admin.clinics.index');
+        Route::livewire('admin/clinics/onboarding', 'pages::central.admin.onboard-clinic')->middleware('admin.auth')->name('admin.clinics.onboarding');
         Route::livewire('admin/branches', 'pages::central.admin.branches')->middleware('admin.auth')->name('admin.branches');
         Route::livewire('admin/users', 'pages::central.admin.global-users')->middleware('admin.auth')->name('admin.users');
         Route::livewire('admin/services', 'pages::central.admin.dental-services')->middleware('admin.auth')->name('admin.services');

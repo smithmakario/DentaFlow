@@ -1,33 +1,4 @@
 <x-admin-layout>
-<!-- Top Bar -->
-<header class="sticky top-0 z-30 flex justify-between items-center h-16 px-xl w-full bg-white/80 backdrop-blur-md border-b border-slate-200">
-<div class="flex items-center gap-lg">
-<div class="relative">
-<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-sm" data-icon="search">search</span>
-<input class="pl-10 pr-4 py-2 bg-surface border-none rounded-full text-body-sm w-80 focus:ring-2 focus:ring-primary/20" placeholder="Search clinics, transactions..." type="text"/>
-</div>
-</div>
-<div class="flex items-center gap-md">
-<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-colors relative">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
-</button>
-<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-colors">
-<span class="material-symbols-outlined" data-icon="help">help</span>
-</button>
-<button class="p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-colors">
-<span class="material-symbols-outlined" data-icon="settings">settings</span>
-</button>
-<div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
-<div class="flex items-center gap-3">
-<div class="text-right">
-<p class="font-label-md text-on-surface">Alex Thompson</p>
-<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Super Admin</p>
-</div>
-<img alt="User profile" class="w-10 h-10 rounded-full border-2 border-primary-fixed" data-alt="A professional headshot of a middle-aged male corporate executive with a friendly smile, set against a clean, blurred office background. The lighting is bright and even, reinforcing a professional and trustworthy clinical brand identity. The color palette is composed of soft blues and crisp whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWR0JUAErA6pbpe9Xda9NVCB1OMurEcLeRw-XQDYnvR17-Jc6TdjDDP2nmLDiVXg_eD3DchhzW2nNYXc6-CcGg5Z7C9Bf1dDMAPqaWoBnyvN_f-MXpmh7UHM7dkKLarEjqhLO_WXxKJOQ5Jf385hRsVOtWhGXVc3y9yoDqffeMpyPP4X489xLRr5t53jtYXw60vlNcURtHGqBCGsqBIza47SI6wgHMskSlSzHmY9XBwbseX5dzWUmNla4UA5iFSQ2-GO66PJzQ8nE"/>
-</div>
-</div>
-</header>
 <div class="p-xl max-w-7xl mx-auto">
 <!-- Page Header -->
 <div class="mb-xl flex justify-between items-end">

@@ -45,32 +45,32 @@ new #[Layout('layouts::admin')] class extends Component {
 ?>
 
 <div class="space-y-6">
-    <div>
-        <p class="text-xl">Welcome, {{ auth()->user()->username }}</p>
+    <div class="flex justify-between items-center">
+        <div>
+            <p class="text-xl">Platform Overview</p>
+            <p class="text-gray-400">Real-time health and growth metrics for DentaFlow Global</p>
+        </div>
+        <div>
+            <x-button text="Last 30 Days" icon="calendar" color="white" class="me-2" outline />
+            <x-button text="Export Report" icon="arrow-down-tray" />
+        </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <x-stats :title="'Total Branches'" :number="$this->totalBranches" icon="rectangle-stack" />
-        <x-stats :title="'Total Doctors'" :number="$this->totalDoctors" icon="user" color="blue" />
-        <x-stats :title="'Total Patients'" :number="$this->totalPatients" icon="users" color="green" />
-        <x-stats :title="'Total Users'" :number="$this->totalDoctors + $this->totalPatients" icon="user-group" color="yellow" />
+        <x-stats :title="'Total Clinics'" number="1,284" icon="building-office" />
+        <x-stats :title="'Total Revenue'" number="₦5.4B" icon="banknotes" color="green" :increase="true" />
+        <x-stats :title="'Active Subscriptions'" number="1,150" icon="shield-check" color="blue" />
+        <x-stats :title="'Growth Rate'" number="18.5%" icon="chart-bar-square" color="red" increase="true" />
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <x-card>
             <x-slot:header>
                 <div class="flex items-center gap-2">
-                    <x-icon name="user-circle" outline class="h-8 w-8" /> Recent Patients
+                    <x-icon name="chart-bar" outline class="h-8 w-8" /> Clinic Onboarding Growth
                 </div>
-                <a href="{{ route('admin.users') }}">
-                    <x-button text="View All" icon="arrow-right" outline />
-                </a>
             </x-slot:header>
-            <x-table :$headers :$rows>
-                @interact('column_tenant_id', $row)
-                <span>{{ $row->tenant->id ?? '—' }}</span>
-                @endinteract
-            </x-table>
+            <div id="chart"></div>
         </x-card>
 
         <x-card>
@@ -90,3 +90,31 @@ new #[Layout('layouts::admin')] class extends Component {
         </x-card>
     </div>
 </div>
+@script
+<script>
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+        const data = google.visualization.arrayToDataTable([
+            ['Element', 'Clinics'],
+            ['JAN', 45],
+            ['FEB', 30],
+            ['MAR', 50],
+            ['APR', 25],
+            ["MAY", 14],
+            ["JUN", 55],
+        ]);
+        const view = new google.visualization.DataView(data);
+        view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation"}, 2]);
+        
+        const options = {
+            width: 600,
+            height: 400,
+            bar: { groupWidth: "95%"},
+            legend: { position: "none" },
+        };
+        const chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+        chart.draw(view, options);
+
+    }
+</script>
+@endscript

@@ -30,7 +30,7 @@ class ClinicRegistrationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Clinic Registration Mail',
+            subject: 'Clinic Registration Successful',
         );
     }
 
@@ -40,7 +40,7 @@ class ClinicRegistrationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.clinics.registration',
+            markdown: 'mail.clinics.registration',
             with: [
                 'clinic_name' => $this->clinic_name
             ],

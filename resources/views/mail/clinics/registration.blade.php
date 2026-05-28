@@ -1,3 +1,15 @@
-<h1>Welcome, {{ $clinic_name }} to DentaFlow</h1>
-<p>Welcome to our platform!</p>
-<p>We’re excited to have you here. Explore powerful tools, create amazing experiences, and grow with ease. Let’s build something great together!</p>
+@component('mail::message')
+# Hello {{ $clinic_name }}
+
+Thank you for registering with DentaFlow.
+
+Your registration was successful, and your profile is currently being reviewed by our team. Once the review is complete, you will receive another email regarding the status of your account.
+
+
+@component('mail::button', ['url' => '#'])
+    Dashboard
+@endcomponent
+
+Best regards,<br>
+The DentaFlow Team
+@endcomponent
