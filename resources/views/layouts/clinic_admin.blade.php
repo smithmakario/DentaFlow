@@ -15,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         main.mx-auto.max-w-full.p-10 {
-            background: #f9fafb;
+            background: #f8f9ff;
             min-height: 100vh;
         }
     </style>
@@ -37,6 +37,10 @@
     <x-toast />
       <!-- Sidebar Navigation -->
       <aside class="fixed left-0 top-0 h-full flex flex-col w-64 bg-slate-50 border-r border-slate-200 z-50">
+            @php
+            $activeClass = 'flex items-center gap-3 px-4 py-3 text-blue-700 bg-blue-50 border-r-4 border-blue-600 font-medium';
+            $inactiveClass = 'flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 transition-all';
+            @endphp
          <div class="px-6 py-8">
             <div class="flex items-center gap-2 mb-2">
                <span class="material-symbols-outlined text-primary text-2xl" data-icon="medical_services">medical_services</span>
@@ -46,11 +50,15 @@
          </div>
          <nav class="flex-1 space-y-1">
             <!-- Overview (Active) -->
-            <a class="flex items-center gap-3 px-4 py-3 text-blue-700 bg-blue-50 border-r-4 border-blue-600 font-medium" href="#">
+            <a class="{{ Route::is('clinic_admin.dashboard') ? $activeClass : $inactiveClass }}" href="{{ route('clinic_admin.dashboard') }}">
             <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
             <span class="font-body-md text-body-md">Overview</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-100 transition-all" href="#">
+            <a class="{{ Route::is('clinic_admin.branches.*') ? $activeClass : $inactiveClass }}" href="{{ route('clinic_admin.branches.index') }}">
+            <span class="material-symbols-outlined" data-icon="person">arrow_split</span>
+            <span class="font-body-md text-body-md">Branches</span>
+            </a>
+            <a class="{{ Route::is('clinic_admin.patients') ? $activeClass : $inactiveClass }}" href="{{ route('clinic_admin.patients') }}">
             <span class="material-symbols-outlined" data-icon="person">person</span>
             <span class="font-body-md text-body-md">Patients</span>
             </a>
@@ -103,7 +111,7 @@
     </main>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
-        google.charts.load('current', {packages: ['corechart']});
+        google.charts.load('current', {packages: ['corechart', 'bar']});
     </script>
     @livewireScripts
 </body>

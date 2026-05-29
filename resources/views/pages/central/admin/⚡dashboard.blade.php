@@ -28,14 +28,16 @@ new #[Layout('layouts::admin')] class extends Component {
     public function with(): array
     {
         return [
-            'headers' => [
-                ['index' => 'first_name', 'label' => 'First name'],
-                ['index' => 'last_name', 'label' => 'Last name'],
-                ['index' => 'email', 'label' => 'Email address'],
-                ['index' => 'tenant_id', 'label' => 'Branch name'],
+            'onboardingHeaders' => [
+                ['index' => 'clinic_name', 'label' => 'Clinic Name'],
+                ['index' => 'sub_type', 'label' => 'Plan'],
+                ['index' => 'branch_no', 'label' => 'Branches'],
+                ['index' => 'contact_email', 'label' => 'Email'],
+                ['index' => 'telephone', 'label' => 'Phone'],
+                ['index' => 'status', 'label' => 'Status'],
+                ['index' => 'created_at', 'label' => 'Onboarded'],
             ],
-            'rows' => GlobalUser::with('tenant')
-                ->where('role', 'patient')
+            'onboardingRows' => Tenant::with('clinic_profile')
                 ->latest()
                 ->limit(10)
                 ->get(),
@@ -70,32 +72,66 @@ new #[Layout('layouts::admin')] class extends Component {
                     <x-icon name="chart-bar" outline class="h-8 w-8" /> Clinic Onboarding Growth
                 </div>
             </x-slot:header>
-            <div id="chart"></div>
+            <div id="bar-chart" class="w-full"></div>
         </x-card>
 
         <x-card>
             <x-slot:header>
                 <div class="flex items-center gap-2">
-                    <x-icon name="folder-open" outline class="h-8 w-8" /> Quick Actions
+                    <x-icon name="banknotes" outline class="h-8 w-8" /> Subscriptions
                 </div>
             </x-slot:header>
-            <div class="flex flex-col gap-3">
-                <a href="{{ route('admin.users') }}" class="w-full">
-                    <x-button text="Browse All Users" icon="users" class="w-full" />
-                </a>
-                <a href="{{ route('admin.branches') }}" class="w-full">
-                    <x-button text="Manage Branches" icon="rectangle-stack" outline class="w-full" />
-                </a>
-            </div>
+            <div id="donut-chart"></div>
         </x-card>
     </div>
+
+    <x-card>
+        <x-slot:header>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <x-icon name="building-office" outline class="h-8 w-8" /> Recent Clinic Onboardings
+                </div>
+                <x-button text="View All" icon="arrow-right" color="white" outline x-on:click="window.location.href='{{ route('admin.clinics.index') }}'" />
+            </div>
+        </x-slot:header>
+        <x-table :headers="$onboardingHeaders" :rows="$onboardingRows">
+            @interact('column_clinic_name', $row)
+            {{ $row->clinic_profile?->clinic_name ?? 'N/A' }}
+            @endinteract
+
+            @interact('column_sub_type', $row)
+            <x-badge text="{{ ucfirst($row->clinic_profile?->sub_type ?? 'Standard') }}" color="blue" />
+            @endinteract
+
+            @interact('column_branch_no', $row)
+            {{ $row->clinic_profile?->branch_no ?? 1 }}
+            @endinteract
+
+            @interact('column_contact_email', $row)
+            {{ $row->clinic_profile?->contact_email ?? 'N/A' }}
+            @endinteract
+
+            @interact('column_telephone', $row)
+            {{ $row->clinic_profile?->telephone ?? 'N/A' }}
+            @endinteract
+
+            @interact('column_status', $row)
+            @php $status = $row->clinic_profile?->status ?? 'inactive'; @endphp
+            <x-badge text="{{ ucfirst($status) }}" color="{{ $status === 'active' ? 'green' : 'secondary' }}" />
+            @endinteract
+
+            @interact('column_created_at', $row)
+            {{ $row->created_at->format('M d, Y') }}
+            @endinteract
+        </x-table>
+    </x-card>
 </div>
 @script
 <script>
     google.charts.setOnLoadCallback(drawChart);
     function drawChart() {
         const data = google.visualization.arrayToDataTable([
-            ['Element', 'Clinics'],
+            ['Growth', 'Clinics'],
             ['JAN', 45],
             ['FEB', 30],
             ['MAR', 50],
@@ -103,18 +139,30 @@ new #[Layout('layouts::admin')] class extends Component {
             ["MAY", 14],
             ["JUN", 55],
         ]);
-        const view = new google.visualization.DataView(data);
-        view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation"}, 2]);
+        const donutData = google.visualization.arrayToDataTable([
+            ['Plan', 'No of users'],
+            ['Standard', 753],
+            ['Professional', 201],
+            ['Enterprise', 159],
+        ]);
         
         const options = {
-            width: 600,
-            height: 400,
-            bar: { groupWidth: "95%"},
+            width: "100%",
             legend: { position: "none" },
+            bar: { groupWidth: "90%"},
+            chartArea: {
+                width: '100%',
+            }
         };
-        const chart = new google.visualization.ColumnChart(document.getElementById('chart'));
-        chart.draw(view, options);
+        const donutOptions = {
+            pieHole: 0.4,
+        };
 
+        const barChart = new google.charts.Bar(document.getElementById('bar-chart'));
+        barChart.draw(data, google.charts.Bar.convertOptions(options));
+
+        const donutChart = new google.visualization.PieChart(document.getElementById('donut-chart'));
+        donutChart.draw(donutData, donutOptions);
     }
 </script>
 @endscript

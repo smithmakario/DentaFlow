@@ -25,7 +25,9 @@ Route::middleware([
 ])->group(function () {
 
     Route::livewire('', 'pages::clinic_admin.dashboard')->middleware('auth')->name('clinic_admin.dashboard');
-    Route::livewire('', 'pages::clinic_admin.patients')->middleware('auth')->name('clinic_admin.patients');
+    Route::livewire('branches', 'pages::clinic_admin.branches')->middleware('auth')->name('clinic_admin.branches.index');
+    Route::livewire('branches/add', 'pages::clinic_admin.add-branch')->middleware('auth')->name('clinic_admin.branches.add');
+    Route::livewire('patients', 'pages::clinic_admin.patients')->middleware('auth')->name('clinic_admin.patients');
 
     require_once __DIR__ . '/auth.php';
         

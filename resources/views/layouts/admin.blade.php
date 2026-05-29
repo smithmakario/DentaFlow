@@ -15,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         main.mx-auto.max-w-full.p-10 {
-            background: #f9fafb;
+            background: #f8f9ff;
             min-height: 100vh;
         }
     </style>
@@ -132,7 +132,7 @@
     </main>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
-        google.charts.load('current', {packages: ['corechart']});
+        google.charts.load('current', {packages: ['corechart', 'bar']});
     </script>
     @livewireScripts
 </body>
