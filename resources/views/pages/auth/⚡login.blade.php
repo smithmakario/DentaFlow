@@ -9,7 +9,7 @@ new class extends Component {
 
     public $password;
 
-    public $role = 'patient';
+    public $role = 'clinic_admin';
 
     public $remember = true;
 
@@ -25,14 +25,15 @@ new class extends Component {
         if (auth()->attempt($credentials, $this->remember)) {
             $role = auth()->user()->role;
             $redirects = [
-                'doctor' => '/clinician',
-                'receptionist' => '/clinician',
-                'nurse' => '/clinician',
-                'accountant' => '/clinician',
-                'lab_tech' => '/clinician',
-                'clinic_admin' => '/clinician',
+                'superadmin' => '/',
+                'clinic_admin' => '/',
+                'doctor' => '/',
+                'receptionist' => '/',
+                'nurse' => '/',
+                'accountant' => '/',
+                'lab_tech' => '/',
             ];
-            return redirect($redirects[$role] ?? '/patient');
+            return redirect($redirects[$role] ?? '/');
         }
         throw ValidationException::withMessages(['username' => 'Credentials not found']);
     }
@@ -46,13 +47,17 @@ new class extends Component {
                 <h1 class="mb-6 text-2xl font-bold text-center">Welcome back</h1>
                 <form wire:submit="save">
                     @csrf
-                    <div class="flex gap-3 mb-6 justify-center">
-                        <label for="patient" class="p-3 border-1 round-6 border-primary-400 w-full rounded-md shadow">
-                            <x-radio label="Patient" id="patient" value="patient" name="role" wire:model="role" />
-                        </label>
-                        <label for="staff" class="p-3 border-1 border-green-400 w-full rounded-md shadow">
-                            <x-radio label="Staff" id="staff" value="doctor" name="role" wire:model="role" color="green"/>
-                        </label>
+                    <div class="mb-6">
+                        <x-select.styled label="Role" wire:model="role" :options="[
+                            ['label' => 'Super Admin', 'value' => 'superadmin'],
+                            ['label' => 'Clinic Admin', 'value' => 'clinic_admin'],
+                            ['label' => 'Doctor', 'value' => 'doctor'],
+                            ['label' => 'Receptionist', 'value' => 'receptionist'],
+                            ['label' => 'Nurse', 'value' => 'nurse'],
+                            ['label' => 'Accountant', 'value' => 'accountant'],
+                            ['label' => 'Lab Tech', 'value' => 'lab_tech'],
+                            ['label' => 'Patient', 'value' => 'patient'],
+                        ]" select="label:label|value:value" />
                     </div>
                     <div class="mb-6">
                         <x-input label="Username or email *" placeholder="Enter username or email" wire:model="username" />
@@ -66,7 +71,6 @@ new class extends Component {
                     </div>
                     <x-button submit text="Sign In" class="w-full" loading />
                 </form>
-                <p class="mt-6 text-center">Don't have an account? <x-link href="{{ route('register') }}" text="Sign Up" /></p>
             </x-card>
         </div>
     </div>

@@ -23,9 +23,9 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     'web',
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
+
+    Route::livewire('', 'pages::clinic_admin.dashboard')->middleware('auth')->name('clinic_admin.dashboard');
+    Route::livewire('', 'pages::clinic_admin.patients')->middleware('auth')->name('clinic_admin.patients');
 
     require_once __DIR__ . '/auth.php';
         

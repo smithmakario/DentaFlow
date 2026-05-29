@@ -1,78 +1,93 @@
 <?php
+
 use App\Mail\ClinicRegistrationMail;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
+use Livewire\Component;
 use TallStackUi\Traits\Interactions;
 
-use Livewire\Component;
-use Livewire\Attributes\Layout;
-
-new #[Layout('layouts::admin')] class extends Component
-{
-    use Interactions;
-
-    #[Validate('required')]
-    public string $clinic_name = '';
-
-    public string $clinic_address = '';
-
-    public string $contact_number = '';
-
-    #[Validate('required')]
-    public string $subdomain = '';
-
-    #[Validate('required')]
-    public string $sub_type = 'silver';
-
-    #[Validate('required')]
-    public string $admin_user = '';
-
-    #[Validate('required')]
-    public string $admin_email = '';
-
-    #[Validate('required')]
-    public string $admin_password = '';
-
-    #[Validate('required')]
-    public int $branch_no = 1;
-
-    public int $step = 1;
-
-    public string $clinic_type = "General Dentistry";
-
-    public array $clinic_types = [
-        'General Dentistry',
-        'Orthodontics',
-        'Pediatric Dentistry',
-        'Periodontics',
-        'Multi-Specialty'
-    ];
-
-    public function save(): void
+new
+    #[Layout('layouts::admin')]
+    class extends Component
     {
-        $this->validate();
-        $profile_data = [
-            'clinic_name' => $this->clinic_name,
-            'address' => $this->clinic_address,
-            'telephone' => $this->contact_number,
-            'specialization' => $this->clinic_type,
-            'branch_no' => $this->branch_no,
-            'sub_type' => $this->sub_type,
-            'status' => 'active',
+        use Interactions;
+
+        #[Validate('required')]
+        public string $clinic_name = '';
+
+        public string $clinic_address = '';
+
+        public string $contact_number = '';
+
+        #[Validate('required')]
+        public string $subdomain = '';
+
+        #[Validate('required')]
+        public string $sub_type = 'silver';
+
+        #[Validate('required')]
+        public string $admin_user = '';
+
+        #[Validate('required')]
+        public string $admin_email = '';
+
+        #[Validate('required')]
+        public string $admin_password = '';
+
+        #[Validate('required')]
+        public int $branch_no = 1;
+
+        public int $step = 1;
+
+        public string $clinic_type = 'General Dentistry';
+
+        public array $clinic_types = [
+            'General Dentistry',
+            'Orthodontics',
+            'Pediatric Dentistry',
+            'Periodontics',
+            'Multi-Specialty'
         ];
-        $tenant = Tenant::create(['id' => $this->subdomain]);
-        $tenant->clinic_profile()->create($profile_data);
-        $domain_name = "{$this->subdomain}.localhost";
-        if (App::isProduction()) {
-            $domain_name = $this->subdomain . "." . request()->getHttpHost();
+
+        public function save(): void
+        {
+            $this->validate();
+            $profile_data = [
+                'clinic_name' => $this->clinic_name,
+                'address' => $this->clinic_address,
+                'telephone' => $this->contact_number,
+                'specialization' => $this->clinic_type,
+                'branch_no' => $this->branch_no,
+                'sub_type' => $this->sub_type,
+                'status' => 'active',
+            ];
+            $admin_data = [
+                'first_name' => $this->admin_user,
+                'last_name' => $this->admin_user,
+                'username' => $this->admin_user,
+                'email' => $this->admin_email,
+                'password' => Hash::make($this->admin_password),
+                'role' => 'clinic_admin',
+            ];
+            $tenant = Tenant::create(['id' => $this->subdomain]);
+            $tenant->run(function () use ($admin_data) {
+                User::create($admin_data);
+            });
+            $tenant->clinic_profile()->create($profile_data);
+            $domain_name = "{$this->subdomain}.localhost";
+            if (App::isProduction()) {
+                $domain_name = $this->subdomain . '.' . request()->getHttpHost();
+            }
+            $tenant->domains()->create(['domain' => $domain_name]);
+            Mail::to($this->admin_email)->send(new ClinicRegistrationMail($this->clinic_name));
+            $this->toast()->success('Registration Successful')->send();
         }
-        $tenant->domains()->create(['domain' => $domain_name]);
-        Mail::to($this->admin_email)->send(new ClinicRegistrationMail($this->clinic_name));
-        $this->toast()->success('Registration Successful')->send();
-    }
-};
+    };
 ?>
 
 <div>

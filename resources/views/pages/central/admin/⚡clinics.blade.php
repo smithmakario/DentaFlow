@@ -1,9 +1,9 @@
 <?php
 
-
 use App\Models\Tenant;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\App;
 
 new #[Layout('layouts::admin')] class extends Component
 {
@@ -11,7 +11,7 @@ new #[Layout('layouts::admin')] class extends Component
     {
         return [
             'headers' => [
-                ['index' => 'id', 'label' => 'Subdomain'],
+                ['index' => 'id', 'label' => 'Domain'],
                 ['index' => 'clinic_name', 'label' => 'Clinic Name'],
                 ['index' => 'admin', 'label' => 'Primary Admin'],
                 ['index' => 'sub_type', 'label' => 'Subscription'],
@@ -49,6 +49,10 @@ new #[Layout('layouts::admin')] class extends Component
     </div>
     <x-card>
         <x-table :$headers :$rows>
+            @interact('column_id', $row)
+            <x-link icon="link" href="http://{{ $row->domains()->first()->domain }}{{ App::isLocal() ? ':' . request()->getPort() : null }}" target="_blank" color="blue">{{ $row->domains()->first()->domain }}</x-link>
+            @endinteract
+
             @interact('column_clinic_name', $row)
             {{ $row->clinic_profile->clinic_name }}
             @endinteract
