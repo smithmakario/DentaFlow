@@ -87,12 +87,10 @@ new #[Layout('layouts::admin')] class extends Component {
 
     <x-card>
         <x-slot:header>
-            <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <x-icon name="building-office" outline class="h-8 w-8" /> Recent Clinic Onboardings
                 </div>
                 <x-button text="View All" icon="arrow-right" color="white" outline x-on:click="window.location.href='{{ route('admin.clinics.index') }}'" />
-            </div>
         </x-slot:header>
         <x-table :headers="$onboardingHeaders" :rows="$onboardingRows">
             @interact('column_clinic_name', $row)

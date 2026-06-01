@@ -102,8 +102,8 @@
 <a class="text-on-surface-variant text-sm font-medium hover:text-primary transition-colors" href="#">Pricing</a>
 <a class="text-on-surface-variant text-sm font-medium hover:text-primary transition-colors" href="#">Contact</a>
 </nav>
-<a href="{{ route('login') }}" class="bg-primary text-white text-sm font-bold px-6 py-2.5 rounded-full hover:shadow-lg hover:shadow-primary/20 transition-all">
-                Register
+<a href="{{ route('admin.login') }}" class="bg-primary text-white text-sm font-bold px-6 py-2.5 rounded-full hover:shadow-lg hover:shadow-primary/20 transition-all">
+                Admin
             </a>
 </div>
 </header>
